@@ -25,11 +25,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1657887110,
-        "narHash": "sha256-8VV0/kZed2z8fGtEc2zr+WLxTow+JTIlMjnSisyv0GQ=",
+        "lastModified": 1659484873,
+        "narHash": "sha256-6VoPiGyDdjBHOJ3IpS24lY1lrDiOHeuEefOFI0qz3WE=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "4c5106ed0f3168ff2df21b646aef67e86cbfc11c",
+        "rev": "d8d9ff0b2df77defa10375c6665b51f0251c34d6",
         "type": "github"
       },
       "original": {
@@ -40,11 +40,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1658015103,
-        "narHash": "sha256-mO+23f3SO+fBzEvbxRe6GkSB5Xp43CT2sV8Rs8MYdz8=",
+        "lastModified": 1659522808,
+        "narHash": "sha256-HBcM19nGhI3IWwPNVlYb0MZ8VW6iKp4JbAVkeIHVykc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "8f485713f5e6b6883a9b6959afa98688360a3ecb",
+        "rev": "168d1c578909dc143ba52dbed661c36e76b12b36",
         "type": "github"
       },
       "original": {
@@ -105,11 +105,11 @@
         "vowel-src": "vowel-src"
       },
       "locked": {
-        "lastModified": 1656162489,
-        "narHash": "sha256-3bws3Jc0kDEcRQWxMLmzc6fGC/P8kM5K4raKI7mdJvU=",
+        "lastModified": 1659525770,
+        "narHash": "sha256-fmBy929w+3E41tRlH673/UUy5jaCtQdnbgnQMtNNkH0=",
         "owner": "mitchmindtree",
         "repo": "tidalcycles.nix",
-        "rev": "fbdd3fb33300a0db7cf8a6845fec468ab877df97",
+        "rev": "3dcdcb7434538c12ddb6eb17e12088350c1fe1c7",
         "type": "github"
       },
       "original": {
@@ -168,16 +168,16 @@
     "vim-tidal-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1656159485,
-        "narHash": "sha256-tB3+WDGY3OEL810Trjzm5nUpLTApVkb+M1AwbsSuyw0=",
+        "lastModified": 1659276864,
+        "narHash": "sha256-0TcTuTEwGe8WnfeyK/Auq0Czeng5fsJC/tP+5tv0Je0=",
         "owner": "mitchmindtree",
         "repo": "vim-tidal",
-        "rev": "a15a59ccee29d2bfa4095c029177efa09a1d5c0a",
+        "rev": "d758da43286e1ab84000ed7e60161834b7fb81be",
         "type": "github"
       },
       "original": {
         "owner": "mitchmindtree",
-        "ref": "superdirt-term",
+        "ref": "find-tidal-boot",
         "repo": "vim-tidal",
         "type": "github"
       }
