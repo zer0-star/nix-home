@@ -29,6 +29,7 @@ in
 
   nixpkgs.overlays = [
     inputs.tidal.overlays.default
+    (import ./overlays/nim.nix)
   ];
 
   # Home Manager needs a bit of information about you and the
