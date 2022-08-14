@@ -30,6 +30,7 @@ in
   nixpkgs.overlays = [
     inputs.tidal.overlays.default
     (import ./overlays/nim.nix)
+    (import ./overlays/hls.nix)
   ];
 
   # Home Manager needs a bit of information about you and the
@@ -112,6 +113,8 @@ in
     nim
     stack
     haskell-language-server
+    haskellPackages.brittany
+    haskellPackages.hls-brittany-plugin
     cmake
     extra-cmake-modules
     gcc
