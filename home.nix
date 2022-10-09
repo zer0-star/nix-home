@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, overlays, ... }:
 
 let
   my-python-packages = pypkgs: with pypkgs; [
@@ -16,6 +16,8 @@ in
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
+    keep-outputs = true;
+    keep-derivations = true;
     # trusted-users = ["zer0-star"];
   };
 
@@ -27,10 +29,9 @@ in
     ./modules/pipewire.conf.nix
   ];
 
-  nixpkgs.overlays = [
-    inputs.tidal.overlays.default
-    (import ./overlays/nim.nix)
-    (import ./overlays/hls.nix)
+  nixpkgs.overlays = overlays ++ [
+    # あきらめた
+    # (import ./overlays/hls.nix)
   ];
 
   # Home Manager needs a bit of information about you and the
@@ -87,16 +88,20 @@ in
     speedtest-cli
     pandoc
     gdb
+    pwndbg
     docker
     docker-compose
     bat
     lazygit
-    mysql-client
+    mariadb.client
     p7zip
     # (pkgs.callPackage ./pkgs/imhex.nix {})
     nodePackages.gitmoji-cli
+    ngrok
 
     diesel-cli
+
+    godot
 
     supercollider
 
@@ -112,6 +117,7 @@ in
     deno
     nim
     stack
+    # haskell.compiler.ghc884
     haskell-language-server
     haskellPackages.brittany
     haskellPackages.hls-brittany-plugin
@@ -128,6 +134,8 @@ in
     go
     koka
     purescript
+    spago
+    dotnet-sdk
     # (pkgs.callPackage ./pkgs/mint.nix {})
     # (pkgs.callPackage ./pkgs/ante {})
 
@@ -192,6 +200,15 @@ in
 
   fonts.fontconfig.enable = true;
 
+  home.pointerCursor ={
+    package = pkgs.nur.repos.ambroisie.volantes-cursors;
+    # name = "volantes_light_cursors";
+    # name = "volantes_cursors";
+    name = "LyraQ-cursors";
+    size = 64;
+    x11.enable = true;
+  };
+
   programs.opam.enable = true;
 
   programs.gh = {
@@ -200,6 +217,11 @@ in
       git_protocol = "https";
       prompt = "enabled";
     };
+  };
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
   };
 
   programs.zsh = {
@@ -265,7 +287,7 @@ in
     };
 
     signing = {
-      key = "71F4DFBF21CC954902B59DCAE87C336DA57DE88F";
+      key = "9009FF60684DBF542B8F84DA5AF0540F8ADAD765";
       signByDefault = true;
     };
 
@@ -276,7 +298,15 @@ in
     };
   };
 
-  programs.gpg.enable = true;
+  programs.gpg = {
+    enable = true;
+    scdaemonSettings = {
+      disable-ccid = true;
+      reader-port = "Yubico Yubi";
+      disable-application = "piv";
+      application-priority = "openpgp";
+    };
+  };
 
   services.gpg-agent = {
     enable = true;

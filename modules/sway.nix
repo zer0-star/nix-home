@@ -29,7 +29,7 @@ in
       set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
       exec rm -f $WOBSOCK && mkfifo $WOBSOCK && tail -f $WOBSOCK | wob
 
-      bindswitch --locked --reload lid:on exec ${swaylock}
+      # bindswitch --locked --reload lid:on exec ${swaylock}
 
       # Brightness
       bindsym XF86MonBrightnessDown exec "brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK"
