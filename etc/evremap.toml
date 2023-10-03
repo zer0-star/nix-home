@@ -1,0 +1,22 @@
+# device_name = "PFU Limited HHKB-Hybrid"
+device_name = "HHKB-Hybrid_1 Keyboard"
+
+[[remap]]
+input = ["KEY_LEFTCTRL", "KEY_A"]
+output = ["KEY_HOME"]
+
+[[remap]]
+input = ["KEY_LEFTCTRL", "KEY_E"]
+output = ["KEY_END"]
+
+[[remap]]
+input = ["KEY_LEFTCTRL", "KEY_K"]
+output = ["KEY_RIGHTCTRL", "KEY_LEFTSHIFT", "KEY_DELETE"]
+
+[[remap]]
+input = ["KEY_LEFTCTRL", "KEY_M"]
+output = ["KEY_ENTER"]
+
+[[remap]]
+input = ["KEY_LEFTCTRL", "KEY_H"]
+output = ["KEY_BACKSPACE"]

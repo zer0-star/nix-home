@@ -30,6 +30,25 @@ window#waybar {
   padding-bottom: 2px;
 }
 
+.modules-right > widget {
+  margin-right: 0.5em;
+}
+
+#battery.plugged {
+  color: #95ff78;
+}
+
+#battery.charging {
+  color: #222222;
+  background: #95ff78;
+}
+
+#battery.warning {
+  color: #fdff78;
+}
+
+#battery.critical {}
+
 /* #workspaces button::before { */
 /*   content: ''; */
 /*   position: absolute; */

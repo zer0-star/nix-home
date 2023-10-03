@@ -1,0 +1,12 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 0971a9c..f9e7e9b 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -215,6 +215,7 @@ version = "0.1.0"
+ dependencies = [
+  "anyhow",
+  "evdev-rs",
++ "libc",
+  "log",
+  "pretty_env_logger",
+  "serde",

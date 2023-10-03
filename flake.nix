@@ -10,11 +10,12 @@
     };
     tidal.url = "github:mitchmindtree/tidalcycles.nix";
     nur.url = github:nix-community/NUR;
+    # codex.url = github:herp-inc/codex;
   };
 
   outputs = { nixpkgs, home-manager, tidal, nur, ... }@inputs:
     let
-      system = "x86_64-linux";
+      system = builtins.currentSystem;
       pkgs = nixpkgs.legacyPackages.${system};
       overlays = [
         nur.overlay
@@ -28,6 +29,10 @@
         # the path to your home.nix.
         modules = [
           ./home.nix
+          # codex.hmModule.${system}
+          # ({ ... }: {
+          #   codex.enable = true;
+          # })
         ];
 
         # Optionally use extraSpecialArgs
