@@ -1,6 +1,17 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
+  home.sessionVariables = {
+    # WLR_RENDERER = "vulkan";
+  };
+
+  home.packages = with pkgs; [
+    vulkan-validation-layers
+  ];
+
   programs.swaylock = {
     package = pkgs.swaylock-effects;
     settings = {
@@ -25,6 +36,7 @@
     enable = true;
     systemd.enable = true;
     wrapperFeatures.gtk = true;
+    checkConfig = false;
     extraConfig = ''
       workspace 1 output eDP-1
       workspace 2 output eDP-1
@@ -61,28 +73,32 @@
       bindsym XF86MonBrightnessUp exec "brightnessctl set +2% | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK"
 
       # Volume
-      bindsym XF86AudioRaiseVolume exec 'pamixer -i 1 && pamixer --get-volume > $WOBSOCK'
-      bindsym XF86AudioLowerVolume exec 'pamixer -d 1 && pamixer --get-volume > $WOBSOCK'
-      bindsym XF86AudioMute exec 'pamixer -t && ( [ "$( pamixer --get-mute )" = "true" ] && echo 0 > $WOBSOCK ) || pamixer --get-volume > $WOBSOCK'
-      
+      bindsym XF86AudioRaiseVolume exec 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+ -l 1 && wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed -e "/MUTED/I c0" -e "s/[^[:digit:]]//g" > $WOBSOCK'
+      bindsym XF86AudioLowerVolume exec 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%- -l 1 && wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed -e "/MUTED/I c0" -e "s/[^[:digit:]]//g" > $WOBSOCK'
+      bindsym XF86AudioMute exec 'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed -e "/MUTED/I c0" -e "s/[^[:digit:]]//g" > $WOBSOCK'
+
       # for_window [title="^\.zoom $"] {
       #   floating enable
       #   sticky enable
       # }
 
       for_window [class="Code"] {
-        opacity 0.9
+        opacity 0.85
         # opacity 1
       }
     '';
     config = let
       mouse = "1390:307:DEFT_Pro_TrackBall";
       hhkb = "1278:33:PFU_Limited_HHKB-Hybrid";
+      laptop-kb = "1:1:AT_Translated_Set_2_keyboard";
     in rec {
-      bars = [ ];
+      bars = [];
       startup = [
-        { command = "systemctl --user restart waybar"; always = true; }
-        { command = "sudo python ${../etc/wayremap.config.py}"; }
+        {
+          command = "systemctl --user restart waybar";
+          always = true;
+        }
+        # { command = "sudo python ${../etc/wayremap.config.py}"; }
         # { command = "vivaldi"; }
       ];
       gaps = {
@@ -93,12 +109,15 @@
       menu = "wofi -S run";
       modifier = "Mod4";
       input = {
-        "0:0:python-uinput" = {
+        "4660:22136:xremap" = {
           xkb_layout = "jp";
-          xkb_options = "ctrl:nocaps";
+        };
+        ${laptop-kb} = {
+          xkb_layout = "jp";
         };
         "*" = {
           drag = "disabled";
+          xkb_options = "ctrl:nocaps";
         };
         "type:touchpad" = {
           tap = "enabled";

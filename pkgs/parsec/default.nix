@@ -1,22 +1,34 @@
-{ stdenvNoCC, stdenv
-, lib
-, dpkg, autoPatchelfHook, makeWrapper
-, fetchurl
-, alsa-lib, openssl, udev, ffmpeg_4, curl
-, libglvnd
-, libX11, libXcursor, libXi, libXrandr, libXfixes
-, libpulseaudio
-, libva
-, libpng, libjpeg
+{
+  stdenvNoCC,
+  stdenv,
+  lib,
+  dpkg,
+  autoPatchelfHook,
+  makeWrapper,
+  fetchurl,
+  alsa-lib,
+  openssl,
+  udev,
+  ffmpeg_4,
+  curl,
+  libglvnd,
+  libX11,
+  libXcursor,
+  libXi,
+  libXrandr,
+  libXfixes,
+  libpulseaudio,
+  libva,
+  libpng,
+  libjpeg8,
 }:
-
 stdenvNoCC.mkDerivation {
   pname = "parsec-bin";
   version = "150-86e";
 
   src = fetchurl {
     url = "https://builds.parsec.app/package/parsec-linux.deb";
-    hash = "sha256-wwBy86TdrHaH9ia40yh24yd5G84WTXREihR+9I6o6uU=";
+    hash = "sha256-9F56u+jYj2CClhbnGlLi65FxS1Vq00coxwu7mjVTY1w=";
   };
 
   unpackPhase = ''
@@ -27,7 +39,7 @@ stdenvNoCC.mkDerivation {
     runHook postUnpack
   '';
 
-  nativeBuildInputs = [ dpkg autoPatchelfHook makeWrapper ];
+  nativeBuildInputs = [dpkg autoPatchelfHook makeWrapper];
 
   buildInputs = [
     stdenv.cc.cc # libstdc++
@@ -44,7 +56,7 @@ stdenvNoCC.mkDerivation {
     libpulseaudio
     libva
     libpng
-    libjpeg
+    libjpeg8
     ffmpeg_4
     curl
     libX11

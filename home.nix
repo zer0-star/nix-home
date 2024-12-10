@@ -1,40 +1,49 @@
-{ config, pkgs, inputs, overlays, ... }:
-
-let
-  my-python-packages = pypkgs: with pypkgs; [
-    pandas
-    numpy
-    matplotlib
-    jupyterlab
-    scikitimage
-    scikit-learn
-    openpyxl
-    online-judge-tools
-    # pwntools
-    pyyaml
-    bibtexparser
-    (pypkgs.callPackage ./pkgs/wayremap {})
-    pyclip
-    pytorch
-    pygments
-  ];
-
-in
-
 {
-  nix.package = pkgs.nix;
+  config,
+  pkgs,
+  inputs,
+  overlays,
+  ...
+}: let
+  my-python-packages = pypkgs:
+    with pypkgs; [
+      pandas
+      numpy
+      matplotlib
+      jupyterlab
+      scikitimage
+      scikit-learn
+      openpyxl
+      online-judge-tools
+      pwntools
+      pyyaml
+      bibtexparser
+      # (pypkgs.callPackage ./pkgs/wayremap {})
+      pyclip
+      pytorch
+      pygments
+      pycryptodome
+      selenium
+      polars
+    ];
+
+  obs-wl = pkgs.writeScriptBin "obs-wl" ''
+    exec ${config.programs.obs-studio.finalPackage}/bin/obs -platform xcb
+  '';
+in {
+  nix.package = pkgs.nixVersions.latest;
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
-    keep-outputs = true;
-    keep-derivations = true;
+    # keep-outputs = true;
+    # keep-derivations = true;
     cores = 0;
     substituters = [
-      https://iohk.cachix.org
+      # "https://iohk.cachix.org"
       # https://herp-slum.cachix.org
-      https://cache.iog.io
-      https://cache.nixos.org
-      https://nix-community.cachix.org
+      # "https://cache.iog.io"
+      "https://cache.nixos.org"
+      "https://nix-community.cachix.org"
     ];
     trusted-public-keys = [
       "herp-slum.cachix.org-1:6SC4HZSxqnmi6Jyxg+Omz+8o2uz8r4sgrz+cB1hn42I="
@@ -57,15 +66,17 @@ in
     ./modules/sway.nix
     ./modules/sway/waybar.nix
     ./modules/pipewire.nix
+    ./modules/xremap.nix
   ];
 
-  nixpkgs.overlays = overlays ++ [
-    # あきらめた
-    # (import ./overlays/hls.nix)
-    (self: super: {
-      evremap = (self.callPackage ./pkgs/evremap {});
-    })
-  ];
+  nixpkgs.overlays =
+    overlays
+    ++ [
+      # (import ./overlays/hls.nix)
+      (self: super: {
+        evremap = self.callPackage ./pkgs/evremap {};
+      })
+    ];
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -84,6 +95,7 @@ in
     xdg-utils
     libinput
     openssl
+    powertop
 
     playerctl
 
@@ -103,28 +115,34 @@ in
     v4l-utils
     wf-recorder
     clipman
-    cinnamon.nemo
+    nemo
     evince
     pavucontrol
     evremap
     nomacs
+    mpv
     wl-mirror
     (callPackage ./pkgs/thorium {})
+    obs-wl
 
     rnnoise-plugin
 
     aria2
     wget
-    exa
+    eza
     fd
     du-dust
     duf
     hexyl
-    ripgrep ripgrep-all
-    neofetch
+    ripgrep
+    ripunzip
+    # neofetch
+    fastfetch
     # gh
     ffmpeg
     imagemagick
+    ghostscript
+    pdftk
     zip
     unzip
     file
@@ -135,12 +153,12 @@ in
     pandoc
     gdb
     pwndbg
-    docker
+    docker_27
     docker-compose
     bat
     lazygit
     mariadb.client
-    p7zip
+    p7zip-rar
     # (pkgs.callPackage ./pkgs/imhex.nix {})
     nodePackages.gitmoji-cli
     ngrok
@@ -162,16 +180,29 @@ in
     binwalk
     rlwrap
     zbar
+    zxing
     inetutils
     dig
+    dogdns
     tokei
     kaggle
+    hugo
+    nnn
+    mdbook
+    fzf
+    ghq
+    bottom
+    gdu
+    httpie
+    procs
+    zellij
+    # termusic
+    qemu
+    tre-command
+    tldr
+    units
+    dive
 
-    diesel-cli
-
-    godot
-
-    
     # (libsForQt5.callPackage ./pkgs/libtas { })
     # (libsForQt5.callPackage ./pkgs/med { })
 
@@ -180,25 +211,39 @@ in
     yubioath-flutter
     yubikey-manager
 
-    (python3.withPackages my-python-packages)
+    (lib.lowPrio (python3.withPackages my-python-packages))
+    pypy3
+    rye
+    uv
     nodejs_latest
+    corepack_latest
     # npm
     deno
     bun
     nim
+    nimlangserver
+    nimble
     stack
+    cabal-install
+    haskellPackages.cabal-gild
+    ghc
     # haskell.compiler.ghc884
     # (haskell-language-server.override { supportedGhcVersions = ["90" "92" "925"]; })
     haskell-language-server
+    haskellPackages.haskell-debug-adapter
     # haskellPackages.brittany
     # haskellPackages.hls-brittany-plugin
+    lua5_1
+    luarocks
+    agda
     cmake
     extra-cmake-modules
-    gcc
+    gcc_latest
+    boost.dev
     clang-tools
     ocaml
     satysfi
-    (pkgs.callPackage ./pkgs/satysfi-language-server {})
+    (callPackage ./pkgs/satysfi-language-server {})
     # rustc
     # rustfmt
     # cargo
@@ -206,12 +251,15 @@ in
     # rust-analyzer
     # rust-analyzer-nightly
     rustup
+    cargo-tauri
+    trunk
     go
     koka
     purescript
     spago
     dotnet-sdk
-    (sage.override { requireSageTests = false; })
+    # sage
+    # (sage.override { requireSageTests = false; })
     metals
     # (pkgs.callPackage ./pkgs/mint.nix {})
     # (pkgs.callPackage ./pkgs/ante {})
@@ -220,14 +268,26 @@ in
     elan
     php
     php.packages.composer
-    pypy3
+    # pypy3
     sbt
     scala_3
-    jdk17
+    jdk21
+    kubectl
+    k3d
+    kustomize
+    nasm
+    nixd
+    alejandra
+    deadnix
+    statix
+    julia
+    isabelle
+    uiua
 
-    texlive.combined.scheme-full
+    # texlive.combined.scheme-full
+    texliveFull
 
-    citra
+    # citra
 
     zotero
     inkscape
@@ -237,92 +297,98 @@ in
 
     firefox
     thunderbird
+    # betterbird
     bitwarden
     bitwarden-cli
     gimp
     gof5
-    logseq
+    # logseq
     libreoffice
     wireshark
 
     # (callPackage ./pkgs/track-cli {})
 
-    # prismlauncher
+    prismlauncher
     tetrio-desktop
 
     # fonts
     noto-fonts
-    noto-fonts-cjk
     noto-fonts-cjk-sans
     noto-fonts-emoji
     noto-fonts-extra
-    (nerdfonts.override { fonts = [ "VictorMono" "Cousine" "DejaVuSansMono" ]; })
+    (nerdfonts.override {fonts = ["VictorMono" "Cousine" "DejaVuSansMono"];})
     roboto
     roboto-slab
-    source-han-sans
-    source-han-serif
-    source-han-mono
+    source-han-sans-japanese
+    source-han-serif-japanese
+    source-han-code-jp
     kanit-font
     (callPackage ./pkgs/cica {})
+    (callPackage ./pkgs/juisee-nf {})
+    monaspace
 
     #unfree
     unityhub
     # (pkgs.callPackage ./pkgs/unityhub {})
-    minecraft
+    # minecraft
     discord
     (vivaldi.override {
       proprietaryCodecs = true;
-      enableWidevine = true;
-      commandLineArgs = "--use-gl=desktop";
+      # enableWidevine = true;
     })
+    # vivaldi-ffmpeg-codecs
+    # widevine-cdm
     spotify
     zoom-us
     # (pkgs.callPackage ./pkgs/inkdrop.nix { })
     # notable
     slack
     tor-browser-bundle-bin
-    postman
+    # postman
     jetbrains.rider
-    (pkgs.callPackage ./pkgs/parsec { })
+    (callPackage ./pkgs/parsec {})
   ];
 
   home.shellAliases = {
-    l = "exa -lah --icons";
-    homeswitch = "home-manager switch --flake \"$HOME/nix-home#zer0-star\" --impure";
+    l = "eza -lah --icons";
+    # homeswitch = "home-manager switch --flake \"$HOME/nix-home#zer0-star\" --impure";
   };
 
   home.sessionVariables = {
     EDITOR = "nvim";
   };
 
-  home.sessionPath = [ ] ++ map (p: "${config.home.homeDirectory}" + p) [
-    "/.cargo/bin"
-    "/.nimble/bin"
-    "/.local/bin"
-    "/.cabal/bin"
-  ];
+  home.sessionPath =
+    []
+    ++ map (p: "${config.home.homeDirectory}" + p) [
+      "/.cargo/bin"
+      "/.nimble/bin"
+      "/.local/bin"
+      "/.cabal/bin"
+    ];
 
   fonts.fontconfig.enable = true;
 
   home.pointerCursor = {
-    package = pkgs.nur.repos.ambroisie.volantes-cursors;
+    # package = pkgs.nur.repos.ambroisie.volantes-cursors;
     # name = "volantes_light_cursors";
     # name = "volantes_cursors";
-    name = "LyraQ-cursors";
+    package = pkgs.capitaine-cursors;
+    name = "capitaine-cursors";
     size = 64;
     x11.enable = true;
   };
 
-  systemd.user.services.evremap =
-    let
-      config-file = ./etc/evremap.toml;
-    in {
-      Install.WantedBy = [ "graphical-session.target" ];
-      Service = {
-        ExecStart = "${pkgs.evremap}/bin/evremap remap ${config-file}";
-        Restart = "always";
-      };
-    };
+  # systemd.user.services.evremap =
+  #   let
+  #     config-file = ./etc/evremap.toml;
+  #   in {
+  #     Install.WantedBy = [ "graphical-session.target" ];
+  #     Service = {
+  #       ExecStart = "${pkgs.evremap}/bin/evremap remap ${config-file}";
+  #       Restart = "always";
+  #     };
+  #   };
 
   gtk = {
     enable = true;
@@ -367,7 +433,7 @@ in
   programs.zsh = {
     enable = true;
     autocd = true;
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     initExtra = ''
       export GPG_TTY="$(tty)"
@@ -405,6 +471,40 @@ in
         exec sway
       end
     '';
+    shellAbbrs = {
+      gg = "ghq get";
+    };
+    plugins = with pkgs.fishPlugins; [
+      {
+        name = "z";
+        src = z.src;
+      }
+      {
+        name = "fzf-fish";
+        src = fzf-fish.src;
+      }
+      {
+        name = "fish-ghq";
+        src = pkgs.fetchFromGitHub {
+          owner = "zer0-star";
+          repo = "fish-ghq";
+          rev = "master";
+          hash = "sha256-YJ7AhTQSDc+t0C/v4Zx5jB9jcU4jHwmZT0kXhPuH8S4=";
+        };
+      }
+    ];
+    functions = {
+      zz = ''
+        z -l | fzf -n 2 | awk '{ print $2 }' | read recent
+        if [ $recent ]
+            cd $recent
+        end
+      '';
+    };
+  };
+
+  programs.man = {
+    generateCaches = false;
   };
 
   programs.starship = {
@@ -431,15 +531,26 @@ in
       gcloud = {
         disabled = true;
       };
+
+      scala.disabled = true;
     };
+  };
+
+  programs.wezterm = {
+    enable = true;
+    extraConfig = builtins.readFile ./etc/wezterm.lua;
   };
 
   programs.alacritty = {
     enable = true;
     settings = {
+      general.import = [
+        "${pkgs.alacritty-theme}/dracula.toml"
+      ];
       window.opacity = 0.7;
-      font.size = 13.0;
-      key_bindings = [
+      # font.size = 13.0;
+      font.normal.family = "Juisee NF";
+      keyboard.bindings = [
         {
           key = "Equals";
           mods = "Control|Shift";
@@ -447,6 +558,10 @@ in
         }
       ];
     };
+  };
+
+  programs.yazi = {
+    enable = true;
   };
 
   programs.obs-studio = {
@@ -462,7 +577,7 @@ in
       ms-vscode.cpptools
       github.copilot
       haskell.haskell
-      matklad.rust-analyzer
+      rust-lang.rust-analyzer
       tomoki1207.pdf
       # matklad.rust-analyzer-nightly
       marp-team.marp-vscode
@@ -513,6 +628,8 @@ in
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
+    # pinentryFlavor = "curses";
+    pinentryPackage = pkgs.pinentry-curses;
   };
 
   programs.ssh = {
@@ -574,59 +691,58 @@ in
     '';
 
     plugins = let
-      skkeleton =
-        pkgs.vimUtils.buildVimPluginFrom2Nix {
-          name = "skkeleton";
-          src = pkgs.fetchFromGitHub {
-            owner = "vim-skk";
-            repo = "skkeleton";
-            rev = "79c703865707984761f379870dd3a7522ac5ef04";
-            sha256 = "sha256-gAJl9BX//QDP1TO7uo8c/LooKgeST73CmecAnVfIFK4=";
-          };
+      skkeleton = pkgs.vimUtils.buildVimPluginFrom2Nix {
+        name = "skkeleton";
+        src = pkgs.fetchFromGitHub {
+          owner = "vim-skk";
+          repo = "skkeleton";
+          rev = "79c703865707984761f379870dd3a7522ac5ef04";
+          sha256 = "sha256-gAJl9BX//QDP1TO7uo8c/LooKgeST73CmecAnVfIFK4=";
         };
-      denops-vim =
-        pkgs.vimUtils.buildVimPluginFrom2Nix {
-          name = "denops-vim";
-          src = pkgs.fetchFromGitHub {
-            owner = "vim-denops";
-            repo = "denops.vim";
-            rev = "53f25d7f2d20c7064a91db4d9129b589a66cda3f";
-            sha256 = "sha256-JC4jYJXSXyjaYtgH+Og8MhP8LfM/2gVx1EEDwEDFyQo=";
-          };
+      };
+      denops-vim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+        name = "denops-vim";
+        src = pkgs.fetchFromGitHub {
+          owner = "vim-denops";
+          repo = "denops.vim";
+          rev = "53f25d7f2d20c7064a91db4d9129b589a66cda3f";
+          sha256 = "sha256-JC4jYJXSXyjaYtgH+Og8MhP8LfM/2gVx1EEDwEDFyQo=";
         };
-    in with pkgs.vimPlugins; [
-      vim-tidal
-      vim-nix
-      vim-surround
-      tokyonight-nvim
-      vim-commentary
-      vim-easymotion
-      denops-vim
-      {
-        plugin = skkeleton;
-        config = ''
-          function! s:skkeleton_init() abort
-            call skkeleton#config({
-              \ 'eggLikeNewline': v:true,
-              \ 'globalJisyo': '${ pkgs.skk-dicts }/share/SKK-JISYO.combined',
-              \ 'globalJisyoEncoding': 'utf-8'
-              \ })
-            call skkeleton#register_kanatable('rom', {
-              \ "z\<Space>": ["\u3000", '''],
-              \ })
+      };
+    in
+      with pkgs.vimPlugins; [
+        vim-tidal
+        vim-nix
+        vim-surround
+        tokyonight-nvim
+        vim-commentary
+        vim-easymotion
+        denops-vim
+        {
+          plugin = skkeleton;
+          config = ''
+            function! s:skkeleton_init() abort
+              call skkeleton#config({
+                \ 'eggLikeNewline': v:true,
+                \ 'globalJisyo': '${pkgs.skk-dicts}/share/SKK-JISYO.combined',
+                \ 'globalJisyoEncoding': 'utf-8'
+                \ })
+              call skkeleton#register_kanatable('rom', {
+                \ "z\<Space>": ["\u3000", '''],
+                \ })
+              imap <C-j> <Plug>(skkeleton-toggle)
+              cmap <C-j> <Plug>(skkeleton-toggle)
+            endfunction
+            augroup skkeleton-initialize-pre
+              autocmd!
+              autocmd User skkeleton-initialize-pre call s:skkeleton_init()
+            augroup END
+
             imap <C-j> <Plug>(skkeleton-toggle)
             cmap <C-j> <Plug>(skkeleton-toggle)
-          endfunction
-          augroup skkeleton-initialize-pre
-            autocmd!
-            autocmd User skkeleton-initialize-pre call s:skkeleton_init()
-          augroup END
-
-          imap <C-j> <Plug>(skkeleton-toggle)
-          cmap <C-j> <Plug>(skkeleton-toggle)
-        '';
-      }
-    ];
+          '';
+        }
+      ];
   };
 
   i18n.inputMethod = {
@@ -639,7 +755,7 @@ in
       ];
     };
   };
-  
+
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards

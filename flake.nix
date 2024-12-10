@@ -9,37 +9,46 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tidal.url = "github:mitchmindtree/tidalcycles.nix";
-    nur.url = github:nix-community/NUR;
+    nur.url = "github:nix-community/NUR";
     # codex.url = github:herp-inc/codex;
+    xremap.url = "github:xremap/nix-flake";
+    # xremap.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, tidal, nur, ... }@inputs:
-    let
-      system = builtins.currentSystem;
-      pkgs = nixpkgs.legacyPackages.${system};
-      overlays = [
-        nur.overlay
-        tidal.overlays.default
+  outputs = {
+    nixpkgs,
+    home-manager,
+    tidal,
+    nur,
+    xremap,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    overlays = [
+      nur.overlay
+      tidal.overlays.default
+    ];
+  in {
+    homeConfigurations.zer0-star = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+
+      # Specify your home configuration modules here, for example,
+      # the path to your home.nix.
+      modules = [
+        ./home.nix
+        # codex.hmModule.${system}
+        # ({ ... }: {
+        #   codex.enable = true;
+        # })
+        xremap.homeManagerModules.default
       ];
-    in {
-      homeConfigurations.zer0-star = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
 
-        # Specify your home configuration modules here, for example,
-        # the path to your home.nix.
-        modules = [
-          ./home.nix
-          # codex.hmModule.${system}
-          # ({ ... }: {
-          #   codex.enable = true;
-          # })
-        ];
-
-        # Optionally use extraSpecialArgs
-        # to pass through arguments to home.nix
-        extraSpecialArgs = {
-          inherit inputs overlays;
-        };
+      # Optionally use extraSpecialArgs
+      # to pass through arguments to home.nix
+      extraSpecialArgs = {
+        inherit inputs overlays;
       };
     };
+  };
 }
