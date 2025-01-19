@@ -117,6 +117,7 @@ in {
     clipman
     nemo
     evince
+    pympress
     pavucontrol
     evremap
     nomacs
@@ -153,6 +154,7 @@ in {
     pandoc
     gdb
     pwndbg
+    valgrind
     docker_27
     docker-compose
     bat
@@ -176,7 +178,7 @@ in {
     usbmuxd
     google-cloud-sdk
     act
-    stegseek
+    # stegseek
     binwalk
     rlwrap
     zbar
@@ -202,6 +204,7 @@ in {
     tldr
     units
     dive
+    just
 
     # (libsForQt5.callPackage ./pkgs/libtas { })
     # (libsForQt5.callPackage ./pkgs/med { })
@@ -212,8 +215,8 @@ in {
     yubikey-manager
 
     (lib.lowPrio (python3.withPackages my-python-packages))
-    pypy3
-    rye
+    # pypy3
+    # rye
     uv
     nodejs_latest
     corepack_latest
@@ -271,6 +274,7 @@ in {
     # pypy3
     sbt
     scala_3
+    scala-cli
     jdk21
     kubectl
     k3d
@@ -281,7 +285,7 @@ in {
     deadnix
     statix
     julia
-    isabelle
+    # isabelle
     uiua
 
     # texlive.combined.scheme-full
@@ -316,15 +320,19 @@ in {
     noto-fonts-cjk-sans
     noto-fonts-emoji
     noto-fonts-extra
-    (nerdfonts.override {fonts = ["VictorMono" "Cousine" "DejaVuSansMono"];})
+    nerd-fonts.victor-mono
+    nerd-fonts.dejavu-sans-mono
+    nerd-fonts.cousine
+    # (nerdfonts.override {fonts = ["VictorMono" "Cousine" "DejaVuSansMono"];})
     roboto
     roboto-slab
     source-han-sans-japanese
     source-han-serif-japanese
     source-han-code-jp
-    kanit-font
+    # kanit-font
     (callPackage ./pkgs/cica {})
-    (callPackage ./pkgs/juisee-nf {})
+    (callPackage ./pkgs/juisee {})
+    (callPackage ./pkgs/juisee/nerdfont.nix {})
     monaspace
 
     #unfree
@@ -345,7 +353,7 @@ in {
     slack
     tor-browser-bundle-bin
     # postman
-    jetbrains.rider
+    # jetbrains.rider
     (callPackage ./pkgs/parsec {})
   ];
 
@@ -367,7 +375,24 @@ in {
       "/.cabal/bin"
     ];
 
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig = {
+    enable = true;
+  };
+
+  xdg.configFile."fontconfig/fonts.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+    <match target="scan">
+        <test name="family">
+            <string>Juisee</string>
+        </test>
+        <edit name="spacing">
+            <int>100</int>
+        </edit>
+    </match>
+    </fontconfig>
+  '';
 
   home.pointerCursor = {
     # package = pkgs.nur.repos.ambroisie.volantes-cursors;
@@ -548,7 +573,7 @@ in {
         "${pkgs.alacritty-theme}/dracula.toml"
       ];
       window.opacity = 0.7;
-      # font.size = 13.0;
+      # font.size = 12.0;
       font.normal.family = "Juisee NF";
       keyboard.bindings = [
         {
@@ -558,6 +583,33 @@ in {
         }
       ];
     };
+  };
+
+  programs.kitty = {
+    enable = true;
+    font.name = "Juisee";
+    # font.name = "DejaVuSansM Nerd Font Mono";
+    font.size = 12;
+    themeFile = "Dracula";
+    settings = {
+      background_opacity = 0.7;
+      background_blur = 10;
+      cursor_trail = 30;
+      touch_scroll_multiplier = 1.5;
+    };
+    keybindings = {
+      "ctrl+c" = "copy_and_clear_or_interrupt";
+      "ctrl+v" = "paste_from_clipboard";
+      "ctrl+shift+h" = "previous_tab";
+      "ctrl+shift+l" = "next_tab";
+      "ctrl+shift+p" = "scroll_to_prompt -1";
+      "ctrl+shift+n" = "scroll_to_prompt 1";
+      "ctrl+alt+t" = "new_tab_with_cwd";
+    };
+  };
+
+  programs.nh = {
+    enable = true;
   };
 
   programs.yazi = {
@@ -602,7 +654,7 @@ in {
     lfs.enable = true;
 
     aliases = {
-      pushf = "push --force-with-lease --force-if-includes";
+      pushforce = "push --force-with-lease --force-if-includes";
     };
 
     extraConfig = {

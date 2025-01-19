@@ -4,6 +4,7 @@
   inputs = {
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs/88195a94f390381c6afcdaa933c2f6ff93959cb4";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,7 +27,7 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     overlays = [
-      nur.overlay
+      nur.overlays.default
       tidal.overlays.default
     ];
   in {

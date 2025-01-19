@@ -1,12 +1,15 @@
-{ config, pkgs, lib, ... }:
-
-let laptop-kb = "AT Translated Set 2 keyboard";
-in
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
+  laptop-kb = "AT Translated Set 2 keyboard";
+in {
   services.xremap = {
     withWlroots = true;
     # debug = true;
-    deviceNames = [ laptop-kb ];
+    deviceNames = [laptop-kb];
     config = {
       modmap = [
         {
@@ -20,7 +23,7 @@ in
         {
           name = "default";
           application = {
-            not = [ "Alacritty" ];
+            not = ["Alacritty" "kitty"];
           };
           remap = {
             "C_L-a" = "home";
@@ -37,18 +40,18 @@ in
   systemd.user.services.xremap2 = {
     Unit = {
       Description = "xremap service (for US)";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" "xremap.service" ];
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target" "xremap.service"];
     };
     Service = {
       Type = "simple";
       ExecStart =
         builtins.replaceStrings
-          [ "device" ]
-          [ "watch=device --ignore" ]
-          config.systemd.user.services.xremap.Service.ExecStart;
+        ["device"]
+        ["watch=device --ignore"]
+        config.systemd.user.services.xremap.Service.ExecStart;
       Restart = "always";
     };
-    Install.WantedBy = [ "graphical-session.target" ];
+    Install.WantedBy = ["graphical-session.target"];
   };
 }

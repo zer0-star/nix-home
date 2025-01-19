@@ -86,6 +86,8 @@
         opacity 0.85
         # opacity 1
       }
+
+      focus output eDP-1
     '';
     config = let
       mouse = "1390:307:DEFT_Pro_TrackBall";
@@ -105,7 +107,8 @@
         inner = 15;
         smartGaps = true;
       };
-      terminal = "alacritty";
+      # terminal = "alacritty";
+      terminal = "kitty";
       menu = "wofi -S run";
       modifier = "Mod4";
       input = {
@@ -133,8 +136,10 @@
         background = "~/Pictures/wallpapers/coneru.png fill";
       };
       output."DP-1" = {
-        # position = "-3600,-3000";
-        # scale = "2";
+        position = "0 0";
+      };
+      output."eDP-1" = {
+        position = "3840 1600";
       };
       keybindings = lib.mkOptionDefault {
         "${modifier}+p" = "exec grimshot copy output --notify";
