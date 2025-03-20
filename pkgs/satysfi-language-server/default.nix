@@ -17,7 +17,7 @@ rustPlatform.buildRustPackage rec {
     hash = "sha256-SkMP33VOKMDgCuxWWZhsITUpwZo13NPDRO0nuHYIBN8=";
   };
 
-  cargoHash = "sha256-dRkKekfo2lVhTh/NIE5mOuRHARyhahC+/sWcxsK/iKc=";
+  cargoHash = "sha256-X3uX0T8s1KAQANY1KIJif7m7UZ3P0brKvyT5C4uxROo=";
 
   meta = with lib; {
     description = "A fast line-oriented regex search tool, similar to ag and ack";

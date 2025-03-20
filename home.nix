@@ -106,9 +106,9 @@ in
 
   nixpkgs.overlays = overlays ++ [
     # (import ./overlays/hls.nix)
-    (self: super: {
-      evremap = self.callPackage ./pkgs/evremap { };
-    })
+    # (self: super: {
+    #   evremap = self.callPackage ./pkgs/evremap { };
+    # })
   ];
 
   # Home Manager needs a bit of information about you and the
@@ -152,7 +152,7 @@ in
     evince
     pympress
     pavucontrol
-    evremap
+    # evremap
     nomacs
     mpv
     wl-mirror
