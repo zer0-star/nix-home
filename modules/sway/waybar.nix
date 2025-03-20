@@ -2,12 +2,14 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.waybar = {
     enable = true;
     systemd.enable = true;
     settings = {
       main = {
+        fixed-center = false;
         backlight = {
           format = "{percent}% {icon}";
           format-icons = [
@@ -60,7 +62,7 @@
             default = "󰎆 ";
             spotify = " ";
           };
-          # max-length = 25;
+          max-length = 70;
           # on-click = "playerctl play-pause";
           return-type = "json";
         };
@@ -129,8 +131,8 @@
         position = "top";
         pulseaudio = {
           format = "{volume}% {icon}";
-          format-bluetooth = "{volume}% {icon}";
-          format-bluetooth-muted = "{icon} {format_source}";
+          format-bluetooth = "{volume}% {icon} ";
+          format-bluetooth-muted = "{icon}  {format_source}";
           format-icons = {
             car = "";
             default = [

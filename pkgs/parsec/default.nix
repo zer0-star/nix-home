@@ -28,7 +28,7 @@ stdenvNoCC.mkDerivation {
 
   src = fetchurl {
     url = "https://builds.parsec.app/package/parsec-linux.deb";
-    hash = "sha256-9F56u+jYj2CClhbnGlLi65FxS1Vq00coxwu7mjVTY1w=";
+    hash = "sha256-8Wkbo6l1NGBPX2QMJszq+u9nLM96tu7WYRTQq6/CzM8=";
   };
 
   unpackPhase = ''
@@ -39,7 +39,11 @@ stdenvNoCC.mkDerivation {
     runHook postUnpack
   '';
 
-  nativeBuildInputs = [dpkg autoPatchelfHook makeWrapper];
+  nativeBuildInputs = [
+    dpkg
+    autoPatchelfHook
+    makeWrapper
+  ];
 
   buildInputs = [
     stdenv.cc.cc # libstdc++

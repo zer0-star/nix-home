@@ -1,8 +1,14 @@
-{ lib, fetchFromGitHub, rustPlatform }:
+{
+  lib,
+  fetchFromGitHub,
+  rustPlatform,
+}:
 
 rustPlatform.buildRustPackage rec {
   pname = "satysfi-language-server";
   version = "master";
+
+  useFetchCargoVendor = true;
 
   src = fetchFromGitHub {
     owner = "monaqa";

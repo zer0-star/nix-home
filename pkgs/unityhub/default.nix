@@ -1,4 +1,8 @@
-{ lib, fetchurl, appimageTools }:
+{
+  lib,
+  fetchurl,
+  appimageTools,
+}:
 
 appimageTools.wrapType2 rec {
   pname = "unityhub";
@@ -10,19 +14,70 @@ appimageTools.wrapType2 rec {
     sha256 = "07nfyfp9apshqarc6pgshsczila6x4943hiyyizc55kp85aw0imn";
   };
 
-  extraPkgs = (pkgs: with pkgs; with xorg; [ gtk2 gdk-pixbuf glib libGL libGLU nss nspr
-    alsa-lib cups libcap fontconfig freetype pango
-    cairo dbus dbus-glib libdbusmenu libdbusmenu-gtk2 expat zlib libpng12 udev tbb
-    libpqxx gtk3 libsecret lsb-release openssl_1_1 nodejs ncurses5
+  extraPkgs = (
+    pkgs:
+    with pkgs;
+    with xorg;
+    [
+      gtk2
+      gdk-pixbuf
+      glib
+      libGL
+      libGLU
+      nss
+      nspr
+      alsa-lib
+      cups
+      libcap
+      fontconfig
+      freetype
+      pango
+      cairo
+      dbus
+      dbus-glib
+      libdbusmenu
+      libdbusmenu-gtk2
+      expat
+      zlib
+      libpng12
+      udev
+      tbb
+      libpqxx
+      gtk3
+      libsecret
+      lsb-release
+      openssl_1_1
+      nodejs
+      ncurses5
 
-    libX11 libXcursor libXdamage libXfixes libXrender libXi
-    libXcomposite libXext libXrandr libXtst libSM libICE libxcb
+      libX11
+      libXcursor
+      libXdamage
+      libXfixes
+      libXrender
+      libXi
+      libXcomposite
+      libXext
+      libXrandr
+      libXtst
+      libSM
+      libICE
+      libxcb
 
-    libselinux pciutils libpulseaudio libxml2 icu clang cacert
-  ]);
+      libselinux
+      pciutils
+      libpulseaudio
+      libxml2
+      icu
+      clang
+      cacert
+    ]
+  );
 
   extraInstallCommands =
-    let appimageContents = appimageTools.extractType2 { inherit pname version src; }; in
+    let
+      appimageContents = appimageTools.extractType2 { inherit pname version src; };
+    in
     ''
       install -Dm444 ${appimageContents}/unityhub.desktop -t $out/share/applications
       substituteInPlace $out/share/applications/unityhub.desktop \

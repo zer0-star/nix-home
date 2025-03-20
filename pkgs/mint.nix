@@ -1,4 +1,9 @@
-{ lib, fetchFromGitHub, crystal, openssl }:
+{
+  lib,
+  fetchFromGitHub,
+  crystal,
+  openssl,
+}:
 
 crystal.buildCrystalPackage rec {
   version = "0.16.0";
@@ -22,14 +27,21 @@ crystal.buildCrystalPackage rec {
   # with mint's shard.lock file in the current directory
   shardsFile = ./shards.nix;
 
-  buildInputs = [ openssl crystal ];
+  buildInputs = [
+    openssl
+    crystal
+  ];
 
   meta = with lib; {
     description = "A refreshing language for the front-end web";
     homepage = "https://mint-lang.com/";
     license = licenses.bsd3;
     maintainers = with maintainers; [ manveru ];
-    platforms = [ "x86_64-linux" "i686-linux" "x86_64-darwin" ];
+    platforms = [
+      "x86_64-linux"
+      "i686-linux"
+      "x86_64-darwin"
+    ];
     broken = lib.versionOlder crystal.version "1.0";
   };
 }

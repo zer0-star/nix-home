@@ -1,24 +1,25 @@
-{ lib
-, stdenv
+{
+  lib,
+  stdenv,
 
-, fetchFromGitHub
+  fetchFromGitHub,
 
-, pkg-config
-, automake
-, autoconf
+  pkg-config,
+  automake,
+  autoconf,
 
-, lua
-, ffmpeg
-, fontconfig
-, freetype
-, alsa-lib
-, xcb-util-cursor
-, SDL2
-# , libX11
-# , libXcursor
+  lua,
+  ffmpeg,
+  fontconfig,
+  freetype,
+  alsa-lib,
+  xcb-util-cursor,
+  SDL2,
+  # , libX11
+  # , libXcursor
 
-, qtbase
-, wrapQtAppsHook
+  qtbase,
+  wrapQtAppsHook,
 }:
 
 stdenv.mkDerivation rec {

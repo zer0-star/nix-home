@@ -1,4 +1,9 @@
-{ lib, stdenv, ocamlPackages, fetchFromGitHub }:
+{
+  lib,
+  stdenv,
+  ocamlPackages,
+  fetchFromGitHub,
+}:
 
 ocamlPackages.buildDunePackage rec {
   pname = "malfunction";
@@ -11,5 +16,9 @@ ocamlPackages.buildDunePackage rec {
   };
   duneVersion = "3";
   nativeBuildInputs = with ocamlPackages; [ cppo ];
-  propagatedBuildInputs = with ocamlPackages; [ zarith omd findlib ];
+  propagatedBuildInputs = with ocamlPackages; [
+    zarith
+    omd
+    findlib
+  ];
 }

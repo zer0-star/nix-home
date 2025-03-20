@@ -1,4 +1,8 @@
-{ lib, fetchurl, appimageTools }:
+{
+  lib,
+  fetchurl,
+  appimageTools,
+}:
 
 appimageTools.wrapType2 rec {
   pname = "thorium";
@@ -9,11 +13,14 @@ appimageTools.wrapType2 rec {
     hash = "sha256-LnUUYnkbPxTWjCQFheqG2BhlksFRa2B5WZ8w23wV/Qg=";
   };
 
-  extraPkgs = pkgs: with pkgs; [
-  ];
+  extraPkgs =
+    pkgs: with pkgs; [
+    ];
 
   extraInstallCommands =
-    let appimageContents = appimageTools.extractType2 { inherit pname version src; }; in
+    let
+      appimageContents = appimageTools.extractType2 { inherit pname version src; };
+    in
     ''
       install -Dm444 ${appimageContents}/thorium.desktop -t $out/share/applications
       substituteInPlace $out/share/applications/thorium.desktop \

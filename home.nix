@@ -4,9 +4,10 @@
   inputs,
   overlays,
   ...
-}: let
-  my-python-packages = pypkgs:
-    with pypkgs; [
+}:
+let
+  my-python-packages =
+    pypkgs: with pypkgs; [
       pandas
       numpy
       matplotlib
@@ -30,11 +31,45 @@
   obs-wl = pkgs.writeScriptBin "obs-wl" ''
     exec ${config.programs.obs-studio.finalPackage}/bin/obs -platform xcb
   '';
-in {
+
+  steam-gs = pkgs.writeScriptBin "steam-gs" ''
+    #!/usr/bin/env bash
+    set -xeuo pipefail
+
+    gamescopeArgs=(
+        --adaptive-sync # VRR support
+        --hdr-enabled
+        --mangoapp # performance overlay
+        --rt
+        --steam
+    )
+    steamArgs=(
+        -pipewire-dmabuf
+        -tenfoot
+    )
+    mangoConfig=(
+        cpu_temp
+        gpu_temp
+        ram
+        vram
+    )
+    mangoVars=(
+        MANGOHUD=1
+        MANGOHUD_CONFIG="$(IFS=,; echo "''${mangoConfig[*]}")"
+    )
+
+    export "''${mangoVars[@]}"
+    exec gamescope "''${gamescopeArgs[@]}" -- steam "''${steamArgs[@]}"
+  '';
+in
+{
   nix.package = pkgs.nixVersions.latest;
 
   nix.settings = {
-    experimental-features = ["nix-command" "flakes"];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     # keep-outputs = true;
     # keep-derivations = true;
     cores = 0;
@@ -69,14 +104,12 @@ in {
     ./modules/xremap.nix
   ];
 
-  nixpkgs.overlays =
-    overlays
-    ++ [
-      # (import ./overlays/hls.nix)
-      (self: super: {
-        evremap = self.callPackage ./pkgs/evremap {};
-      })
-    ];
+  nixpkgs.overlays = overlays ++ [
+    # (import ./overlays/hls.nix)
+    (self: super: {
+      evremap = self.callPackage ./pkgs/evremap { };
+    })
+  ];
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -123,8 +156,9 @@ in {
     nomacs
     mpv
     wl-mirror
-    (callPackage ./pkgs/thorium {})
+    (callPackage ./pkgs/thorium { })
     obs-wl
+    steam-gs
 
     rnnoise-plugin
 
@@ -145,7 +179,7 @@ in {
     ghostscript
     pdftk
     zip
-    unzip
+    unzipNLS
     file
     mimeo
     mold
@@ -155,7 +189,7 @@ in {
     gdb
     pwndbg
     valgrind
-    docker_27
+    docker
     docker-compose
     bat
     lazygit
@@ -205,6 +239,9 @@ in {
     units
     dive
     just
+    hyperfine
+    sd
+    zenn-cli
 
     # (libsForQt5.callPackage ./pkgs/libtas { })
     # (libsForQt5.callPackage ./pkgs/med { })
@@ -218,7 +255,8 @@ in {
     # pypy3
     # rye
     uv
-    nodejs_latest
+    # nodejs_latest
+    nodejs
     corepack_latest
     # npm
     deno
@@ -241,12 +279,14 @@ in {
     agda
     cmake
     extra-cmake-modules
+    meson
+    ninja
     gcc_latest
     boost.dev
     clang-tools
     ocaml
     satysfi
-    (callPackage ./pkgs/satysfi-language-server {})
+    (callPackage ./pkgs/satysfi-language-server { })
     # rustc
     # rustfmt
     # cargo
@@ -282,6 +322,7 @@ in {
     nasm
     nixd
     alejandra
+    nixfmt-rfc-style
     deadnix
     statix
     julia
@@ -290,6 +331,7 @@ in {
 
     # texlive.combined.scheme-full
     texliveFull
+    tex-fmt
 
     # citra
 
@@ -330,10 +372,11 @@ in {
     source-han-serif-japanese
     source-han-code-jp
     # kanit-font
-    (callPackage ./pkgs/cica {})
-    (callPackage ./pkgs/juisee {})
-    (callPackage ./pkgs/juisee/nerdfont.nix {})
+    (callPackage ./pkgs/cica { })
+    (callPackage ./pkgs/juisee { })
+    (callPackage ./pkgs/juisee/nerdfont.nix { })
     monaspace
+    (callPackage ./pkgs/firple { })
 
     #unfree
     unityhub
@@ -354,7 +397,7 @@ in {
     tor-browser-bundle-bin
     # postman
     # jetbrains.rider
-    (callPackage ./pkgs/parsec {})
+    (callPackage ./pkgs/parsec { })
   ];
 
   home.shellAliases = {
@@ -367,7 +410,7 @@ in {
   };
 
   home.sessionPath =
-    []
+    [ ]
     ++ map (p: "${config.home.homeDirectory}" + p) [
       "/.cargo/bin"
       "/.nimble/bin"
@@ -623,9 +666,16 @@ in {
     ];
   };
 
+  programs.mangohud = {
+    enable = true;
+    settings = {
+      toggle_hud = "F12";
+    };
+  };
+
   programs.vscode = {
     enable = true;
-    extensions = with pkgs.vscode-extensions; [
+    profiles.default.extensions = with pkgs.vscode-extensions; [
       ms-vscode.cpptools
       github.copilot
       haskell.haskell
@@ -662,6 +712,42 @@ in {
       core.editor = "nvim";
       init.defaultBranch = "main";
       pull.ff = "only";
+
+      column.ui = "auto";
+      branch.sort = "-committerdate";
+      tag.sort = "version:refname";
+      diff = {
+        algorithm = "histogram";
+        colorMoved = "zebra";
+        mnemonicPrefix = true;
+        renames = true;
+      };
+      push = {
+        followTags = true;
+        default = "simple";
+        autoSetupRemote = true;
+      };
+      fetch = {
+        prune = true;
+        pruneTags = true;
+        all = true;
+      };
+      help.autocorrect = "prompt";
+      commit.verbose = true;
+      rerere = {
+        enabled = true;
+        autoupdate = true;
+      };
+      rebase = {
+        autoSquash = true;
+        autoStash = true;
+        updateRefs = true;
+      };
+      core = {
+        fsmonitor = true;
+        untrackedCache = true;
+      };
+      merge.conflictstyle = "zdiff3";
     };
   };
 
@@ -742,27 +828,29 @@ in {
       set wildmenu
     '';
 
-    plugins = let
-      skkeleton = pkgs.vimUtils.buildVimPluginFrom2Nix {
-        name = "skkeleton";
-        src = pkgs.fetchFromGitHub {
-          owner = "vim-skk";
-          repo = "skkeleton";
-          rev = "79c703865707984761f379870dd3a7522ac5ef04";
-          sha256 = "sha256-gAJl9BX//QDP1TO7uo8c/LooKgeST73CmecAnVfIFK4=";
+    plugins =
+      let
+        skkeleton = pkgs.vimUtils.buildVimPluginFrom2Nix {
+          name = "skkeleton";
+          src = pkgs.fetchFromGitHub {
+            owner = "vim-skk";
+            repo = "skkeleton";
+            rev = "79c703865707984761f379870dd3a7522ac5ef04";
+            sha256 = "sha256-gAJl9BX//QDP1TO7uo8c/LooKgeST73CmecAnVfIFK4=";
+          };
         };
-      };
-      denops-vim = pkgs.vimUtils.buildVimPluginFrom2Nix {
-        name = "denops-vim";
-        src = pkgs.fetchFromGitHub {
-          owner = "vim-denops";
-          repo = "denops.vim";
-          rev = "53f25d7f2d20c7064a91db4d9129b589a66cda3f";
-          sha256 = "sha256-JC4jYJXSXyjaYtgH+Og8MhP8LfM/2gVx1EEDwEDFyQo=";
+        denops-vim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+          name = "denops-vim";
+          src = pkgs.fetchFromGitHub {
+            owner = "vim-denops";
+            repo = "denops.vim";
+            rev = "53f25d7f2d20c7064a91db4d9129b589a66cda3f";
+            sha256 = "sha256-JC4jYJXSXyjaYtgH+Og8MhP8LfM/2gVx1EEDwEDFyQo=";
+          };
         };
-      };
-    in
-      with pkgs.vimPlugins; [
+      in
+      with pkgs.vimPlugins;
+      [
         vim-tidal
         vim-nix
         vim-surround

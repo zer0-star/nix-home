@@ -1,22 +1,23 @@
-{ lib
-, stdenv
-, fetchFromGitHub
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
 
-, fcitx5
-, fcitx5-qt
+  fcitx5,
+  fcitx5-qt,
 
-, cmake
-, extra-cmake-modules
-, gettext
-, gcc
-, pkg-config
+  cmake,
+  extra-cmake-modules,
+  gettext,
+  gcc,
+  pkg-config,
 
-, qt5
+  qt5,
 
-, libskk
-, skk-dicts
+  libskk,
+  skk-dicts,
 
-, enableQt ? false
+  enableQt ? false,
 }:
 
 stdenv.mkDerivation rec {
@@ -31,8 +32,8 @@ stdenv.mkDerivation rec {
   };
 
   cmakeFlags = [
-    "-DENABLE_QT=${ toString enableQt }"
-    "-DSKK_DEFAULT_PATH=${ skk-dicts }/share/SKK-JISYO.combined"
+    "-DENABLE_QT=${toString enableQt}"
+    "-DSKK_DEFAULT_PATH=${skk-dicts}/share/SKK-JISYO.combined"
   ];
 
   nativeBuildInputs = [
@@ -56,4 +57,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
-

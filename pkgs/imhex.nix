@@ -1,17 +1,18 @@
-{ lib
-, stdenv
-, cmake
-, fetchFromGitHub
-, mbedtls
-, gtk3
-, pkg-config
-, libGLU
-, glfw3
-, file
-, python3
-, xlibsWrapper
-, dbus
-, cacert
+{
+  lib,
+  stdenv,
+  cmake,
+  fetchFromGitHub,
+  mbedtls,
+  gtk3,
+  pkg-config,
+  libGLU,
+  glfw3,
+  file,
+  python3,
+  xlibsWrapper,
+  dbus,
+  cacert,
 }:
 
 stdenv.mkDerivation rec {
@@ -34,7 +35,12 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-Djg/11INid3SGXoMuU13BiKOkELhayhC3mxK3Rr1KJw=";
   };
 
-  nativeBuildInputs = [ cmake python3 pkg-config xlibsWrapper ];
+  nativeBuildInputs = [
+    cmake
+    python3
+    pkg-config
+    xlibsWrapper
+  ];
 
   buildInputs = [
     mbedtls
@@ -46,7 +52,10 @@ stdenv.mkDerivation rec {
     cacert
   ];
 
-  cmakeFlags = ["-DCMAKE_BUILD_TYPE=Release" "-DIMHEX_OFFLINE_BUILD=ON"];
+  cmakeFlags = [
+    "-DCMAKE_BUILD_TYPE=Release"
+    "-DIMHEX_OFFLINE_BUILD=ON"
+  ];
 
   installPhase = ''
     install -D imhex $out/bin/imhex

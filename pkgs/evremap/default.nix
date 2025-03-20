@@ -1,10 +1,11 @@
-{ lib
-, fetchFromGitHub
+{
+  lib,
+  fetchFromGitHub,
 
-, rustPlatform
+  rustPlatform,
 
-, pkg-config
-, libevdev
+  pkg-config,
+  libevdev,
 }:
 
 rustPlatform.buildRustPackage rec {

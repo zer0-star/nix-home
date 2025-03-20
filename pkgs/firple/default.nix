@@ -5,13 +5,13 @@
 }:
 
 stdenvNoCC.mkDerivation rec {
-  pname = "cica";
-  version = "5.0.3";
+  pname = "Firple";
+  version = "5.000";
 
   src = fetchzip {
-    url = "https://github.com/miiton/Cica/releases/download/v${version}/Cica_v${version}.zip";
+    url = "https://github.com/negset/Firple/releases/download/${version}/Firple.zip";
+    hash = "sha256-cVNpL7AJe5xCLFfCPII5eP7xA66WWNqEID2gReM44m0=";
     stripRoot = false;
-    hash = "sha256-BtDnfWCfD9NE8tcWSmk8ciiInsspNPTPmAdGzpg62SM=";
   };
 
   installPhase = ''
@@ -23,8 +23,8 @@ stdenvNoCC.mkDerivation rec {
   '';
 
   meta = with lib; {
-    homepage = "https://github.com/miiton/Cica";
-    description = "プログラミング用日本語等幅フォント Cica(シカ)";
+    homepage = "https://github.com/negset/Firple";
+    description = "A monospaced Japanese font containing ligatures";
     license = licenses.ofl;
     # maintainers = [ maintainers.rycee ];
     platforms = platforms.all;

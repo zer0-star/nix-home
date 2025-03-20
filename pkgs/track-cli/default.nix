@@ -1,12 +1,13 @@
-{ lib
-, stdenv
-, fetchurl
+{
+  lib,
+  stdenv,
+  fetchurl,
 
-, autoPatchelfHook
-, unzip
+  autoPatchelfHook,
+  unzip,
 
-, openssl_1_1
-, gcc
+  openssl_1_1,
+  gcc,
 }:
 
 stdenv.mkDerivation rec {

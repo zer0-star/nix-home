@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   home.sessionVariables = {
     # WLR_RENDERER = "vulkan";
   };
@@ -89,93 +90,95 @@
 
       focus output eDP-1
     '';
-    config = let
-      mouse = "1390:307:DEFT_Pro_TrackBall";
-      hhkb = "1278:33:PFU_Limited_HHKB-Hybrid";
-      laptop-kb = "1:1:AT_Translated_Set_2_keyboard";
-    in rec {
-      bars = [];
-      startup = [
-        {
-          command = "systemctl --user restart waybar";
-          always = true;
-        }
-        # { command = "sudo python ${../etc/wayremap.config.py}"; }
-        # { command = "vivaldi"; }
-      ];
-      gaps = {
-        inner = 15;
-        smartGaps = true;
-      };
-      # terminal = "alacritty";
-      terminal = "kitty";
-      menu = "wofi -S run";
-      modifier = "Mod4";
-      input = {
-        "4660:22136:xremap" = {
-          xkb_layout = "jp";
+    config =
+      let
+        mouse = "1390:307:DEFT_Pro_TrackBall";
+        hhkb = "1278:33:PFU_Limited_HHKB-Hybrid";
+        laptop-kb = "1:1:AT_Translated_Set_2_keyboard";
+      in
+      rec {
+        bars = [ ];
+        startup = [
+          {
+            command = "systemctl --user restart waybar";
+            always = true;
+          }
+          # { command = "sudo python ${../etc/wayremap.config.py}"; }
+          # { command = "vivaldi"; }
+        ];
+        gaps = {
+          inner = 15;
+          smartGaps = true;
         };
-        ${laptop-kb} = {
-          xkb_layout = "jp";
+        # terminal = "alacritty";
+        terminal = "kitty";
+        menu = "wofi -S run";
+        modifier = "Mod4";
+        input = {
+          "4660:22136:xremap" = {
+            xkb_layout = "jp";
+          };
+          ${laptop-kb} = {
+            xkb_layout = "jp";
+          };
+          "*" = {
+            drag = "disabled";
+            xkb_options = "ctrl:nocaps";
+          };
+          "type:touchpad" = {
+            tap = "enabled";
+            natural_scroll = "enabled";
+            scroll_factor = "0.5";
+          };
+          ${hhkb} = {
+            xkb_model = "hhk";
+            xkb_layout = "us";
+          };
         };
-        "*" = {
-          drag = "disabled";
-          xkb_options = "ctrl:nocaps";
+        output."*" = {
+          background = "~/Pictures/wallpapers/coneru.png fill";
         };
-        "type:touchpad" = {
-          tap = "enabled";
-          natural_scroll = "enabled";
-          scroll_factor = "0.5";
+        output."DP-1" = {
+          position = "0 0";
         };
-        ${hhkb} = {
-          xkb_model = "hhk";
-          xkb_layout = "us";
+        output."eDP-1" = {
+          position = "3840 1600";
         };
-      };
-      output."*" = {
-        background = "~/Pictures/wallpapers/coneru.png fill";
-      };
-      output."DP-1" = {
-        position = "0 0";
-      };
-      output."eDP-1" = {
-        position = "3840 1600";
-      };
-      keybindings = lib.mkOptionDefault {
-        "${modifier}+p" = "exec grimshot copy output --notify";
-        "${modifier}+Shift+p" = "exec grimshot copy area --notify";
-        "${modifier}+Shift+v" = "exec clipman pick -t wofi";
-        "XF86AudioPlay" = "exec playerctl play-pause";
-        "XF86AudioPrev" = "exec playerctl position 5-";
-        "XF86AudioNext" = "exec playerctl position 5+";
-        "Ctrl+XF86AudioPrev" = "exec playerctl previous";
-        "Ctrl+XF86AudioNext" = "exec playerctl next";
-        "--input-device=${mouse} --whole-window BTN_FORWARD" = "exec echo";
-        "--input-device=${mouse} --whole-window BTN_BACK" = "exec echo";
-        "--input-device=${mouse} --whole-window BTN_TASK" = "exec echo";
+        keybindings = lib.mkOptionDefault {
+          "${modifier}+p" = "exec grimshot copy output --notify";
+          "${modifier}+Shift+p" = "exec grimshot copy area --notify";
+          "${modifier}+Shift+v" = "exec clipman pick -t wofi";
+          "XF86AudioPlay" = "exec playerctl play-pause";
+          "XF86AudioPrev" = "exec playerctl position 5-";
+          "XF86AudioNext" = "exec playerctl position 5+";
+          "Ctrl+XF86AudioPrev" = "exec playerctl previous";
+          "Ctrl+XF86AudioNext" = "exec playerctl next";
+          "--input-device=${mouse} --whole-window BTN_FORWARD" = "exec echo";
+          "--input-device=${mouse} --whole-window BTN_BACK" = "exec echo";
+          "--input-device=${mouse} --whole-window BTN_TASK" = "exec echo";
 
-        "${modifier}+Ctrl+l" = "exec swaylock";
+          "${modifier}+Ctrl+l" = "exec swaylock";
 
-        "${modifier}+Ctrl+1" = "workspace -1";
-        "${modifier}+Ctrl+2" = "workspace -2";
-        "${modifier}+Ctrl+3" = "workspace -3";
-        "${modifier}+Ctrl+4" = "workspace -4";
-        "${modifier}+Ctrl+5" = "workspace -5";
-        "${modifier}+Ctrl+6" = "workspace -6";
-        "${modifier}+Ctrl+7" = "workspace -7";
-        "${modifier}+Ctrl+8" = "workspace -8";
-        "${modifier}+Ctrl+9" = "workspace -9";
+          "${modifier}+Ctrl+1" = "workspace -1";
+          "${modifier}+Ctrl+2" = "workspace -2";
+          "${modifier}+Ctrl+3" = "workspace -3";
+          "${modifier}+Ctrl+4" = "workspace -4";
+          "${modifier}+Ctrl+5" = "workspace -5";
+          "${modifier}+Ctrl+6" = "workspace -6";
+          "${modifier}+Ctrl+7" = "workspace -7";
+          "${modifier}+Ctrl+8" = "workspace -8";
+          "${modifier}+Ctrl+9" = "workspace -9";
 
-        "${modifier}+Ctrl+Shift+1" = "move container to workspace -1";
-        "${modifier}+Ctrl+Shift+2" = "move container to workspace -2";
-        "${modifier}+Ctrl+Shift+3" = "move container to workspace -3";
-        "${modifier}+Ctrl+Shift+4" = "move container to workspace -4";
-        "${modifier}+Ctrl+Shift+5" = "move container to workspace -5";
-        "${modifier}+Ctrl+Shift+6" = "move container to workspace -6";
-        "${modifier}+Ctrl+Shift+7" = "move container to workspace -7";
-        "${modifier}+Ctrl+Shift+8" = "move container to workspace -8";
-        "${modifier}+Ctrl+Shift+9" = "move container to workspace -9";
+          "${modifier}+Ctrl+Shift+1" = "move container to workspace -1";
+          "${modifier}+Ctrl+Shift+2" = "move container to workspace -2";
+          "${modifier}+Ctrl+Shift+3" = "move container to workspace -3";
+          "${modifier}+Ctrl+Shift+4" = "move container to workspace -4";
+          "${modifier}+Ctrl+Shift+5" = "move container to workspace -5";
+          "${modifier}+Ctrl+Shift+6" = "move container to workspace -6";
+          "${modifier}+Ctrl+Shift+7" = "move container to workspace -7";
+          "${modifier}+Ctrl+Shift+8" = "move container to workspace -8";
+          "${modifier}+Ctrl+Shift+9" = "move container to workspace -9";
+        };
       };
-    };
   };
 }

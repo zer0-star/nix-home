@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   xdg.configFile = {
     # "pipewire/pipewire.conf" = {
     #   source = pkgs.substituteAll {

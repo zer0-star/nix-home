@@ -1,10 +1,11 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, poetry-core
-, python-uinput
-, evdev
-, i3ipc
+{
+  lib,
+  buildPythonPackage,
+  fetchFromGitHub,
+  poetry-core,
+  python-uinput,
+  evdev,
+  i3ipc,
 }:
 
 buildPythonPackage rec {

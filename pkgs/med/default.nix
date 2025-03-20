@@ -1,18 +1,19 @@
-{ stdenv
-, lib
-, fetchFromGitHub
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
 
-, pkg-config
-, cmake
-, gcc
-, jsoncpp
-, icu
-, readline
-, xcb-util-cursor
+  pkg-config,
+  cmake,
+  gcc,
+  jsoncpp,
+  icu,
+  readline,
+  xcb-util-cursor,
 
-, qtbase
-, qttools
-, wrapQtAppsHook
+  qtbase,
+  qttools,
+  wrapQtAppsHook,
 }:
 
 stdenv.mkDerivation rec {
