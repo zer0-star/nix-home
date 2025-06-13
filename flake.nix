@@ -16,6 +16,9 @@
     # xremap.inputs.nixpkgs.follows = "nixpkgs";
     pwndbg.url = "github:pwndbg/pwndbg";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   outputs =
@@ -28,6 +31,7 @@
       xremap,
       pwndbg,
       treefmt-nix,
+      nix-index-database,
       ...
     }@inputs:
     let
@@ -46,19 +50,12 @@
       homeConfigurations.zer0-star = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
-        # Specify your home configuration modules here, for example,
-        # the path to your home.nix.
         modules = [
           ./home.nix
-          # codex.hmModule.${system}
-          # ({ ... }: {
-          #   codex.enable = true;
-          # })
           xremap.homeManagerModules.default
+          nix-index-database.hmModules.nix-index
         ];
 
-        # Optionally use extraSpecialArgs
-        # to pass through arguments to home.nix
         extraSpecialArgs = {
           inherit inputs overlays;
         };

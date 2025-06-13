@@ -15,14 +15,14 @@ rustPlatform.buildRustPackage rec {
   src = fetchFromGitHub {
     owner = "wez";
     repo = pname;
-    rev = "d64c90e6fa8631bc519db3c8aceb5ad27f024e00";
-    hash = "sha256-7fS42x+YLci9HG0IL58IBS4qxHLZdk3YlPHseZzJ/ag=";
+    rev = "cc618e8b973f5c6f66682d1477b3b868a768c545";
+    hash = "sha256-aAAnlGlSFPOK3h8UuAOlFyrKTEuzbyh613IiPE7xWaA=";
   };
 
-  cargoHash = "sha256-I+iHJP/LVwJ0vGjuvZbI/uu8oqZb0baE5xtYAy2Jeu4=";
+  cargoHash = "sha256-3KXvRbPHM78IGe7Hl8AEHCmK0onroQycyTfOm942e9Y=";
 
   cargoPatches = [
-    ./cargo-lock.patch
+    # ./cargo-lock.patch
   ];
 
   nativeBuildInputs = [

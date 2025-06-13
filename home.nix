@@ -26,41 +26,13 @@ let
       pycryptodome
       selenium
       polars
+      pulp
     ];
 
   obs-wl = pkgs.writeScriptBin "obs-wl" ''
     exec ${config.programs.obs-studio.finalPackage}/bin/obs -platform xcb
   '';
 
-  steam-gs = pkgs.writeScriptBin "steam-gs" ''
-    #!/usr/bin/env bash
-    set -xeuo pipefail
-
-    gamescopeArgs=(
-        --adaptive-sync # VRR support
-        --hdr-enabled
-        --mangoapp # performance overlay
-        --rt
-        --steam
-    )
-    steamArgs=(
-        -pipewire-dmabuf
-        -tenfoot
-    )
-    mangoConfig=(
-        cpu_temp
-        gpu_temp
-        ram
-        vram
-    )
-    mangoVars=(
-        MANGOHUD=1
-        MANGOHUD_CONFIG="$(IFS=,; echo "''${mangoConfig[*]}")"
-    )
-
-    export "''${mangoVars[@]}"
-    exec gamescope "''${gamescopeArgs[@]}" -- steam "''${steamArgs[@]}"
-  '';
 in
 {
   nix.package = pkgs.nixVersions.latest;
@@ -74,17 +46,11 @@ in
     # keep-derivations = true;
     cores = 0;
     substituters = [
-      # "https://iohk.cachix.org"
-      # https://herp-slum.cachix.org
-      # "https://cache.iog.io"
       "https://cache.nixos.org"
       "https://nix-community.cachix.org"
     ];
     trusted-public-keys = [
-      "herp-slum.cachix.org-1:6SC4HZSxqnmi6Jyxg+Omz+8o2uz8r4sgrz+cB1hn42I="
-      "iohk.cachix.org-1:DpRUyj7h7V830dp/i6Nti+NEO2/nhblbov/8MW7Rqoo="
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
     netrc-file = "${config.xdg.configHome}/nix/netrc";
@@ -106,9 +72,9 @@ in
 
   nixpkgs.overlays = overlays ++ [
     # (import ./overlays/hls.nix)
-    # (self: super: {
-    #   evremap = self.callPackage ./pkgs/evremap { };
-    # })
+    (self: super: {
+      evremap = self.callPackage ./pkgs/evremap { };
+    })
   ];
 
   # Home Manager needs a bit of information about you and the
@@ -152,13 +118,12 @@ in
     evince
     pympress
     pavucontrol
-    # evremap
+    evremap
     nomacs
-    mpv
     wl-mirror
     (callPackage ./pkgs/thorium { })
     obs-wl
-    steam-gs
+    # steam-gs
 
     rnnoise-plugin
 
@@ -242,6 +207,7 @@ in
     hyperfine
     sd
     zenn-cli
+    nix-prefetch-github
 
     # (libsForQt5.callPackage ./pkgs/libtas { })
     # (libsForQt5.callPackage ./pkgs/med { })
@@ -252,15 +218,17 @@ in
     yubikey-manager
 
     (lib.lowPrio (python3.withPackages my-python-packages))
-    # pypy3
-    # rye
+    pypy3
+    rye
     uv
+    ruff
     # nodejs_latest
     nodejs
     corepack_latest
     # npm
     deno
     bun
+    biome
     nim
     nimlangserver
     nimble
@@ -286,7 +254,9 @@ in
     clang-tools
     ocaml
     satysfi
-    (callPackage ./pkgs/satysfi-language-server { })
+    # TODO: fix
+    # (callPackage ./pkgs/satysfi-language-server { })
+
     # rustc
     # rustfmt
     # cargo
@@ -301,7 +271,7 @@ in
     purescript
     spago
     dotnet-sdk
-    # sage
+    sage
     # (sage.override { requireSageTests = false; })
     metals
     # (pkgs.callPackage ./pkgs/mint.nix {})
@@ -346,7 +316,7 @@ in
     # betterbird
     bitwarden
     bitwarden-cli
-    gimp
+    gimp3
     gof5
     # logseq
     libreoffice
@@ -398,6 +368,8 @@ in
     # postman
     # jetbrains.rider
     (callPackage ./pkgs/parsec { })
+    voicevox
+    voicevox-engine
   ];
 
   home.shellAliases = {
@@ -447,6 +419,10 @@ in
     x11.enable = true;
   };
 
+  systemd.user.tmpfiles.rules = [
+    "D! %h/tmp 0700"
+  ];
+
   # systemd.user.services.evremap =
   #   let
   #     config-file = ./etc/evremap.toml;
@@ -493,7 +469,6 @@ in
       PATH = "($env.PATH | append [${pkgs.lib.concatStringsSep "," config.home.sessionPath}])";
     };
     shellAliases = {
-      l = "ls -la";
       homeswitch = "home-manager switch --flake \"~/nix-home#zer0-star\" --impure";
     };
   };
@@ -503,7 +478,7 @@ in
     autocd = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    initExtra = ''
+    initContent = ''
       export GPG_TTY="$(tty)"
       export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
       gpgconf --launch gpg-agent
@@ -541,6 +516,10 @@ in
     '';
     shellAbbrs = {
       gg = "ghq get";
+      kn = {
+        position = "anywhere";
+        expansion = "&& kitten notify 'done!' || kitten notify 'failed!'";
+      };
     };
     plugins = with pkgs.fishPlugins; [
       {
@@ -655,8 +634,20 @@ in
     enable = true;
   };
 
+  programs.nix-index = {
+    enable = true;
+    enableFishIntegration = false;
+  };
+
   programs.yazi = {
     enable = true;
+  };
+
+  programs.mpv = {
+    enable = true;
+    config = {
+      keep-open = true;
+    };
   };
 
   programs.obs-studio = {
@@ -767,12 +758,13 @@ in
     enable = true;
     enableSshSupport = true;
     # pinentryFlavor = "curses";
-    pinentryPackage = pkgs.pinentry-curses;
+    pinentry.package = pkgs.pinentry-curses;
   };
 
   programs.ssh = {
     enable = true;
     forwardAgent = true;
+    includes = [ "secret.conf" ];
     matchBlocks = {
       "git.trap.jp" = {
         extraOptions = {
@@ -886,13 +878,25 @@ in
   };
 
   i18n.inputMethod = {
-    enabled = "fcitx5";
+    enable = true;
+    type = "fcitx5";
     fcitx5 = {
       addons = with pkgs; [
         fcitx5-mozc
         fcitx5-skk
         # (libsForQt5.callPackage ./pkgs/fcitx5-skk.nix { })
       ];
+    };
+  };
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+    ];
+    config = {
+      common.default = "wlr";
     };
   };
 

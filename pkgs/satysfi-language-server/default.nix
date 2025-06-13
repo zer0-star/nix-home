@@ -13,11 +13,11 @@ rustPlatform.buildRustPackage rec {
   src = fetchFromGitHub {
     owner = "monaqa";
     repo = pname;
-    rev = "c48b59c248b5e4deb6dc9cd6a2a0df27af53bbce";
-    hash = "sha256-SkMP33VOKMDgCuxWWZhsITUpwZo13NPDRO0nuHYIBN8=";
+    rev = "1ce6bc4d08eb748aeb10f69498e4a16f01978535";
+    hash = "sha256-4EmLDsCrJXzQb72JrGGPR7+gAQKcniVGrBnrl9JanBs=";
   };
 
-  cargoHash = "sha256-X3uX0T8s1KAQANY1KIJif7m7UZ3P0brKvyT5C4uxROo=";
+  cargoHash = "sha256-HvjiYK4x15n6KVKHEnpW9nLGYDixRczMp1isiobybVk=";
 
   meta = with lib; {
     description = "A fast line-oriented regex search tool, similar to ag and ack";

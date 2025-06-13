@@ -57,6 +57,15 @@
       workspace -7 output DP-1
       workspace -8 output DP-1
       workspace -9 output DP-1
+      workspace ^1 output HDMI-A-1
+      workspace ^2 output HDMI-A-1
+      workspace ^3 output HDMI-A-1
+      workspace ^4 output HDMI-A-1
+      workspace ^5 output HDMI-A-1
+      workspace ^6 output HDMI-A-1
+      workspace ^7 output HDMI-A-1
+      workspace ^8 output HDMI-A-1
+      workspace ^9 output HDMI-A-1
 
       exec wl-paste -t text --watch clipman store
 
@@ -135,50 +144,71 @@
             xkb_layout = "us";
           };
         };
-        output."*" = {
-          background = "~/Pictures/wallpapers/coneru.png fill";
+        output = {
+          "*" = {
+            background = "~/Pictures/wallpapers/coneru.png fill";
+          };
+          "DP-1" = {
+            position = "0 0";
+          };
+          "eDP-1" = {
+            position = "3840 1600";
+          };
+          "HDMI-A-1" = {
+            position = "3840 520";
+          };
         };
-        output."DP-1" = {
-          position = "0 0";
-        };
-        output."eDP-1" = {
-          position = "3840 1600";
-        };
-        keybindings = lib.mkOptionDefault {
-          "${modifier}+p" = "exec grimshot copy output --notify";
-          "${modifier}+Shift+p" = "exec grimshot copy area --notify";
-          "${modifier}+Shift+v" = "exec clipman pick -t wofi";
-          "XF86AudioPlay" = "exec playerctl play-pause";
-          "XF86AudioPrev" = "exec playerctl position 5-";
-          "XF86AudioNext" = "exec playerctl position 5+";
-          "Ctrl+XF86AudioPrev" = "exec playerctl previous";
-          "Ctrl+XF86AudioNext" = "exec playerctl next";
-          "--input-device=${mouse} --whole-window BTN_FORWARD" = "exec echo";
-          "--input-device=${mouse} --whole-window BTN_BACK" = "exec echo";
-          "--input-device=${mouse} --whole-window BTN_TASK" = "exec echo";
+        keybindings = lib.mkOptionDefault (
+          {
+            "${modifier}+p" = "exec grimshot copy output --notify";
+            "${modifier}+Shift+p" = "exec grimshot copy area --notify";
+            "${modifier}+Shift+v" = "exec clipman pick -t wofi";
+            "XF86AudioPlay" = "exec playerctl play-pause";
+            "XF86AudioPrev" = "exec playerctl position 5-";
+            "XF86AudioNext" = "exec playerctl position 5+";
+            "Ctrl+XF86AudioPrev" = "exec playerctl previous";
+            "Ctrl+XF86AudioNext" = "exec playerctl next";
+            "--input-device=${mouse} --whole-window BTN_FORWARD" = "exec echo";
+            "--input-device=${mouse} --whole-window BTN_BACK" = "exec echo";
+            "--input-device=${mouse} --whole-window BTN_TASK" = "exec echo";
 
-          "${modifier}+Ctrl+l" = "exec swaylock";
+            "${modifier}+Ctrl+l" = "exec swaylock";
 
-          "${modifier}+Ctrl+1" = "workspace -1";
-          "${modifier}+Ctrl+2" = "workspace -2";
-          "${modifier}+Ctrl+3" = "workspace -3";
-          "${modifier}+Ctrl+4" = "workspace -4";
-          "${modifier}+Ctrl+5" = "workspace -5";
-          "${modifier}+Ctrl+6" = "workspace -6";
-          "${modifier}+Ctrl+7" = "workspace -7";
-          "${modifier}+Ctrl+8" = "workspace -8";
-          "${modifier}+Ctrl+9" = "workspace -9";
+            "${modifier}+Ctrl+1" = "workspace -1";
+            "${modifier}+Ctrl+2" = "workspace -2";
+            "${modifier}+Ctrl+3" = "workspace -3";
+            "${modifier}+Ctrl+4" = "workspace -4";
+            "${modifier}+Ctrl+5" = "workspace -5";
+            "${modifier}+Ctrl+6" = "workspace -6";
+            "${modifier}+Ctrl+7" = "workspace -7";
+            "${modifier}+Ctrl+8" = "workspace -8";
+            "${modifier}+Ctrl+9" = "workspace -9";
 
-          "${modifier}+Ctrl+Shift+1" = "move container to workspace -1";
-          "${modifier}+Ctrl+Shift+2" = "move container to workspace -2";
-          "${modifier}+Ctrl+Shift+3" = "move container to workspace -3";
-          "${modifier}+Ctrl+Shift+4" = "move container to workspace -4";
-          "${modifier}+Ctrl+Shift+5" = "move container to workspace -5";
-          "${modifier}+Ctrl+Shift+6" = "move container to workspace -6";
-          "${modifier}+Ctrl+Shift+7" = "move container to workspace -7";
-          "${modifier}+Ctrl+Shift+8" = "move container to workspace -8";
-          "${modifier}+Ctrl+Shift+9" = "move container to workspace -9";
-        };
+            "${modifier}+Ctrl+Shift+1" = "move container to workspace -1";
+            "${modifier}+Ctrl+Shift+2" = "move container to workspace -2";
+            "${modifier}+Ctrl+Shift+3" = "move container to workspace -3";
+            "${modifier}+Ctrl+Shift+4" = "move container to workspace -4";
+            "${modifier}+Ctrl+Shift+5" = "move container to workspace -5";
+            "${modifier}+Ctrl+Shift+6" = "move container to workspace -6";
+            "${modifier}+Ctrl+Shift+7" = "move container to workspace -7";
+            "${modifier}+Ctrl+Shift+8" = "move container to workspace -8";
+            "${modifier}+Ctrl+Shift+9" = "move container to workspace -9";
+          }
+          // lib.mergeAttrsList (
+            map (
+              n':
+              let
+                n = toString n';
+              in
+              {
+                "${modifier}+Ctrl+${n}" = "workspace -${n}";
+                "${modifier}+Ctrl+Shift+${n}" = "move container to workspace -${n}";
+                "${modifier}+Alt+${n}" = "workspace ^${n}";
+                "${modifier}+Alt+Shift+${n}" = "move container to workspace ^${n}";
+              }
+            ) (lib.range 1 9)
+          )
+        );
       };
   };
 }

@@ -6,11 +6,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "Firple";
-  version = "5.000";
+  version = "5.100";
 
   src = fetchzip {
     url = "https://github.com/negset/Firple/releases/download/${version}/Firple.zip";
-    hash = "sha256-cVNpL7AJe5xCLFfCPII5eP7xA66WWNqEID2gReM44m0=";
+    hash = "sha256-VKmiio8ynGeC60QUBt+XKQWPQjv8aQxVWEJ15nxtuUY=";
     stripRoot = false;
   };
 

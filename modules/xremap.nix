@@ -30,10 +30,14 @@ in
               "kitty"
             ];
           };
+          device.not = "xremap";
           remap = {
             "C_L-a" = "home";
             "C_L-e" = "end";
-            "C_L-k" = "C_R-Shift-delete";
+            "C_L-k" = [
+              "Shift-end"
+              "backspace"
+            ];
             "C_L-m" = "enter";
             "C_L-h" = "backspace";
           };
@@ -54,7 +58,7 @@ in
     Service = {
       Type = "simple";
       ExecStart =
-        builtins.replaceStrings [ "device" ] [ "watch=device --ignore" ]
+        builtins.replaceStrings [ "device" ] [ "watch=device --ignore xremap --ignore" ]
           config.systemd.user.services.xremap.Service.ExecStart;
       Restart = "always";
     };
