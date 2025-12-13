@@ -139,7 +139,8 @@ in
 
       ./nixbuild.patch
       # Load libraries at runtime by absolute path
-    ] ++ lib.optional (!stdenv.hostPlatform.isWindows) ./toLocation.patch;
+    ]
+    ++ lib.optional (!stdenv.hostPlatform.isWindows) ./toLocation.patch;
 
     configurePhase = ''
       runHook preConfigure
@@ -153,7 +154,8 @@ in
       "--os:${nimHost.os}"
       "-d:release"
       "-d:useGnuReadline"
-    ] ++ lib.optional (stdenv.isDarwin || stdenv.isLinux) "-d:nativeStacktrace";
+    ]
+    ++ lib.optional (stdenv.isDarwin || stdenv.isLinux) "-d:nativeStacktrace";
 
     buildPhase = ''
       runHook preBuild

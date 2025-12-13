@@ -57,7 +57,7 @@
           # exec = "$HOME/.config/system_scripts/mediaplayer.py 2> /dev/null";
           exec = "${pkgs.waybar-mpris}/bin/waybar-mpris --position --autofocus --pause 󰏤 --order SYMBOL:ARTIST:TITLE:POSITION";
           on-click = "${pkgs.waybar-mpris}/bin/waybar-mpris --send toggle";
-          format = "{icon} {}";
+          format = "{icon} {text}";
           format-icons = {
             default = "󰎆 ";
             spotify = " ";

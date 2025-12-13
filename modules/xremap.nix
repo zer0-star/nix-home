@@ -9,6 +9,7 @@ let
 in
 {
   services.xremap = {
+    enable = true;
     withWlroots = true;
     # debug = true;
     deviceNames = [ laptop-kb ];
@@ -57,9 +58,10 @@ in
     };
     Service = {
       Type = "simple";
-      ExecStart =
-        builtins.replaceStrings [ "device" ] [ "watch=device --ignore xremap --ignore" ]
-          config.systemd.user.services.xremap.Service.ExecStart;
+      ExecStart = map (builtins.replaceStrings
+        [ "device" ]
+        [ "watch=device --ignore xremap --ignore" ]
+      ) config.systemd.user.services.xremap.Service.ExecStart;
       Restart = "always";
     };
     Install.WantedBy = [ "graphical-session.target" ];

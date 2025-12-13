@@ -12,7 +12,7 @@ let
       numpy
       matplotlib
       jupyterlab
-      scikitimage
+      scikit-image
       scikit-learn
       openpyxl
       online-judge-tools
@@ -21,7 +21,7 @@ let
       bibtexparser
       # (pypkgs.callPackage ./pkgs/wayremap {})
       pyclip
-      pytorch
+      torch
       pygments
       pycryptodome
       selenium
@@ -131,7 +131,7 @@ in
     wget
     eza
     fd
-    du-dust
+    dust
     duf
     hexyl
     ripgrep
@@ -166,6 +166,8 @@ in
     cloudflared
     pwncat
     socat
+    john
+    rockyou
     nmap
     neovim
     htop
@@ -208,6 +210,7 @@ in
     sd
     zenn-cli
     nix-prefetch-github
+    gemini-cli
 
     # (libsForQt5.callPackage ./pkgs/libtas { })
     # (libsForQt5.callPackage ./pkgs/med { })
@@ -218,7 +221,7 @@ in
     yubikey-manager
 
     (lib.lowPrio (python3.withPackages my-python-packages))
-    pypy3
+    # pypy3
     rye
     uv
     ruff
@@ -264,6 +267,7 @@ in
     # rust-analyzer
     # rust-analyzer-nightly
     rustup
+    cargo-expand
     cargo-tauri
     trunk
     go
@@ -314,32 +318,33 @@ in
     firefox
     thunderbird
     # betterbird
-    bitwarden
+    bitwarden-desktop
     bitwarden-cli
     gimp3
     gof5
     # logseq
     libreoffice
     wireshark
+    ghidra-bin
 
     # (callPackage ./pkgs/track-cli {})
 
     prismlauncher
     tetrio-desktop
+    lutris
 
     # fonts
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
-    noto-fonts-extra
+    noto-fonts-color-emoji
     nerd-fonts.victor-mono
     nerd-fonts.dejavu-sans-mono
     nerd-fonts.cousine
     # (nerdfonts.override {fonts = ["VictorMono" "Cousine" "DejaVuSansMono"];})
     roboto
     roboto-slab
-    source-han-sans-japanese
-    source-han-serif-japanese
+    source-han-sans
+    source-han-serif
     source-han-code-jp
     # kanit-font
     (callPackage ./pkgs/cica { })
@@ -349,7 +354,7 @@ in
     (callPackage ./pkgs/firple { })
 
     #unfree
-    unityhub
+    # unityhub
     # (pkgs.callPackage ./pkgs/unityhub {})
     # minecraft
     discord
@@ -364,12 +369,13 @@ in
     # (pkgs.callPackage ./pkgs/inkdrop.nix { })
     # notable
     slack
-    tor-browser-bundle-bin
+    tor-browser
     # postman
     # jetbrains.rider
     (callPackage ./pkgs/parsec { })
     voicevox
     voicevox-engine
+    mathematica
   ];
 
   home.shellAliases = {
@@ -520,6 +526,7 @@ in
         position = "anywhere";
         expansion = "&& kitten notify 'done!' || kitten notify 'failed!'";
       };
+      mnt = "sudo mount -o uid=(id -u),gid=(id -g)";
     };
     plugins = with pkgs.fishPlugins; [
       {
@@ -636,17 +643,44 @@ in
 
   programs.nix-index = {
     enable = true;
-    enableFishIntegration = false;
+    # enableFishIntegration = false;
   };
 
   programs.yazi = {
     enable = true;
   };
 
+  services.udiskie = {
+    enable = true;
+    settings = {
+      # workaround for
+      # https://github.com/nix-community/home-manager/issues/632
+      program_options = {
+        # replace with your favorite file manager
+        file_manager = "${pkgs.nemo-with-extensions}/bin/nemo";
+      };
+    };
+  };
+
   programs.mpv = {
     enable = true;
+    scripts = with pkgs.mpvScripts; [
+      mpris
+      youtube-chat
+      (buildLua {
+        pname = "pause-replay";
+        version = "0.0.0";
+        src = ./etc/mpv-scripts/pause-replay;
+
+        scriptPath = ".";
+      })
+    ];
+    bindings = {
+      SPACE = "script-message pause-replay";
+    };
     config = {
       keep-open = true;
+      # loop-file = true;
     };
   };
 
@@ -677,15 +711,13 @@ in
     ];
   };
 
+  programs.difftastic = {
+    enable = true;
+    git.enable = true;
+  };
+
   programs.git = {
     enable = true;
-
-    userName = "zer0-star";
-    userEmail = "zer0star.65535@gmail.com";
-
-    difftastic = {
-      enable = true;
-    };
 
     signing = {
       key = "9009FF60684DBF542B8F84DA5AF0540F8ADAD765";
@@ -694,11 +726,14 @@ in
 
     lfs.enable = true;
 
-    aliases = {
-      pushforce = "push --force-with-lease --force-if-includes";
-    };
+    settings = {
+      user.name = "zer0-star";
+      user.email = "zer0star.65535@gmail.com";
 
-    extraConfig = {
+      alias = {
+        pushforce = "push --force-with-lease --force-if-includes";
+      };
+
       # credential.helper = "store";
       core.editor = "nvim";
       init.defaultBranch = "main";
@@ -763,9 +798,12 @@ in
 
   programs.ssh = {
     enable = true;
-    forwardAgent = true;
     includes = [ "secret.conf" ];
+    enableDefaultConfig = false;
     matchBlocks = {
+      "*" = {
+        forwardAgent = true;
+      };
       "git.trap.jp" = {
         extraOptions = {
           HostkeyAlgorithms = "+ssh-rsa";

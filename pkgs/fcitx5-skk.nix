@@ -48,7 +48,8 @@ stdenv.mkDerivation rec {
     libskk
     fcitx5
     fcitx5-qt
-  ] ++ lib.optional enableQt qt5.full;
+  ]
+  ++ lib.optional enableQt qt5.full;
 
   meta = with lib; {
     description = "fcitx5-skk is an input method engine for Fcitx5, which uses libskk as its backend.";
