@@ -13,6 +13,13 @@
     vulkan-validation-layers
   ];
 
+  services.mako = {
+    enable = true;
+    settings = {
+      default-timeout = 15000;
+    };
+  };
+
   programs.swaylock = {
     package = pkgs.swaylock-effects;
     settings = {
@@ -95,7 +102,7 @@
       #   sticky enable
       # }
 
-      for_window [class="Code"] {
+      for_window [app_id="code"] {
         opacity 0.85
         # opacity 1
       }
@@ -155,7 +162,7 @@
             position = "0 0";
           };
           "eDP-1" = {
-            position = "3840 1600";
+            position = "3840 0";
           };
           "HDMI-A-1" = {
             position = "3840 520";

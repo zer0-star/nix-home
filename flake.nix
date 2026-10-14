@@ -18,6 +18,15 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    # moonlight = {
+    #   url = "github:moonlight-mod/moonlight";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -31,6 +40,7 @@
       pwndbg,
       treefmt-nix,
       nix-index-database,
+      nix-vscode-extensions,
       ...
     }@inputs:
     let
@@ -42,6 +52,7 @@
         (final: prev: {
           pwndbg = pwndbg.packages.${system}.pwndbg;
         })
+        nix-vscode-extensions.overlays.default
       ];
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
     in

@@ -6,16 +6,28 @@
   ...
 }:
 let
+  my-python =
+    (pkgs.python3.override {
+      packageOverrides = pyfinal: pyprev: {
+        ptrlib = pyfinal.callPackage ./pkgs/ptrlib { };
+        # pdf2zh = pyfinal.callPackage ./pkgs/pdf2zh { };
+      };
+    }).withPackages
+      my-python-packages;
+
   my-python-packages =
     pypkgs: with pypkgs; [
+      ptrlib
+      # pdf2zh
+
       pandas
       numpy
       matplotlib
+      tqdm
       jupyterlab
       scikit-image
       scikit-learn
       openpyxl
-      online-judge-tools
       pwntools
       pyyaml
       bibtexparser
@@ -70,12 +82,7 @@ in
     ./modules/xremap.nix
   ];
 
-  nixpkgs.overlays = overlays ++ [
-    # (import ./overlays/hls.nix)
-    (self: super: {
-      evremap = self.callPackage ./pkgs/evremap { };
-    })
-  ];
+  nixpkgs.overlays = overlays ++ [ ];
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -118,10 +125,9 @@ in
     evince
     pympress
     pavucontrol
-    evremap
     nomacs
     wl-mirror
-    (callPackage ./pkgs/thorium { })
+    thorium-reader
     obs-wl
     # steam-gs
 
@@ -161,10 +167,12 @@ in
     mariadb.client
     p7zip-rar
     # (pkgs.callPackage ./pkgs/imhex.nix {})
-    nodePackages.gitmoji-cli
+    imhex
+    gitmoji-cli
     ngrok
     cloudflared
     pwncat
+    jadx
     socat
     john
     rockyou
@@ -180,16 +188,18 @@ in
     google-cloud-sdk
     act
     # stegseek
-    binwalk
+    # binwalk
     rlwrap
     zbar
     zxing
     inetutils
+    iputils
     dig
-    dogdns
+    doggo
     tokei
     kaggle
     hugo
+    gotmplfmt
     nnn
     mdbook
     fzf
@@ -208,9 +218,13 @@ in
     just
     hyperfine
     sd
-    zenn-cli
+    # zenn-cli
     nix-prefetch-github
     gemini-cli
+    tree-sitter
+    online-judge-tools
+    online-judge-verify-helper
+    perf
 
     # (libsForQt5.callPackage ./pkgs/libtas { })
     # (libsForQt5.callPackage ./pkgs/med { })
@@ -220,14 +234,14 @@ in
     yubioath-flutter
     yubikey-manager
 
-    (lib.lowPrio (python3.withPackages my-python-packages))
+    (lib.lowPrio my-python)
     # pypy3
     rye
     uv
     ruff
     # nodejs_latest
     nodejs
-    corepack_latest
+    # corepack
     # npm
     deno
     bun
@@ -249,7 +263,6 @@ in
     luarocks
     agda
     cmake
-    extra-cmake-modules
     meson
     ninja
     gcc_latest
@@ -271,11 +284,12 @@ in
     cargo-tauri
     trunk
     go
+    gopls
     koka
     purescript
     spago
     dotnet-sdk
-    sage
+    # sage
     # (sage.override { requireSageTests = false; })
     metals
     # (pkgs.callPackage ./pkgs/mint.nix {})
@@ -296,20 +310,22 @@ in
     nasm
     nixd
     alejandra
-    nixfmt-rfc-style
+    nixfmt
     deadnix
     statix
     julia
     # isabelle
     uiua
+    kotlin
 
     # texlive.combined.scheme-full
     texliveFull
     tex-fmt
+    texlab
 
     # citra
 
-    zotero
+    # zotero
     inkscape
 
     gnumake
@@ -318,12 +334,13 @@ in
     firefox
     thunderbird
     # betterbird
-    bitwarden-desktop
+    # bitwarden-desktop
     bitwarden-cli
     gimp3
     gof5
     # logseq
     libreoffice
+    onlyoffice-desktopeditors
     wireshark
     ghidra-bin
 
@@ -331,7 +348,7 @@ in
 
     prismlauncher
     tetrio-desktop
-    lutris
+    # lutris
 
     # fonts
     noto-fonts
@@ -357,11 +374,18 @@ in
     # unityhub
     # (pkgs.callPackage ./pkgs/unityhub {})
     # minecraft
-    discord
+    # (discord.override {
+    #   withMoonlight = true;
+    #   moonlight = inputs.moonlight.packages.${pkgs.system}.moonlight;
+    # })
+    claude-code
+    codex
+    equibop
     (vivaldi.override {
       proprietaryCodecs = true;
       # enableWidevine = true;
     })
+    google-chrome
     # vivaldi-ffmpeg-codecs
     # widevine-cdm
     spotify
@@ -372,14 +396,15 @@ in
     tor-browser
     # postman
     # jetbrains.rider
-    (callPackage ./pkgs/parsec { })
-    voicevox
-    voicevox-engine
-    mathematica
+    parsec-bin
+    # (callPackage ./pkgs/parsec { })
+    # voicevox
+    # voicevox-engine
+    # mathematica
   ];
 
   home.shellAliases = {
-    l = "eza -lah --icons";
+    l = "eza -lah --icons auto";
     # homeswitch = "home-manager switch --flake \"$HOME/nix-home#zer0-star\" --impure";
   };
 
@@ -419,6 +444,7 @@ in
     # package = pkgs.nur.repos.ambroisie.volantes-cursors;
     # name = "volantes_light_cursors";
     # name = "volantes_cursors";
+    enable = true;
     package = pkgs.capitaine-cursors;
     name = "capitaine-cursors";
     size = 64;
@@ -443,12 +469,16 @@ in
   gtk = {
     enable = true;
     theme = {
-      name = "Layan-dark-solid";
-      package = pkgs.layan-gtk-theme;
+      name = "Palenight";
+      package = pkgs.palenight-theme;
     };
     iconTheme = {
       name = "Nordzy";
       package = pkgs.nordzy-icon-theme;
+    };
+    gtk4.theme = config.gtk.theme;
+    font = {
+      name = "Hiragino Kaku Gothic ProN";
     };
   };
 
@@ -648,6 +678,7 @@ in
 
   programs.yazi = {
     enable = true;
+    shellWrapperName = "y";
   };
 
   services.udiskie = {
@@ -675,8 +706,18 @@ in
         scriptPath = ".";
       })
     ];
-    bindings = {
+    bindings = rec {
       SPACE = "script-message pause-replay";
+      k = SPACE;
+      w = "add speed -.01";
+      e = "add speed .01";
+      s = "add speed -.1";
+      d = "add speed .1";
+      g = "set speed 2.0";
+      h = "set speed 2.5";
+      r = "set speed 1.0";
+      j = "seek -10";
+      l = "seek 10";
     };
     config = {
       keep-open = true;
@@ -700,15 +741,95 @@ in
 
   programs.vscode = {
     enable = true;
-    profiles.default.extensions = with pkgs.vscode-extensions; [
-      ms-vscode.cpptools
-      github.copilot
-      haskell.haskell
-      rust-lang.rust-analyzer
-      tomoki1207.pdf
-      # matklad.rust-analyzer-nightly
-      marp-team.marp-vscode
-    ];
+    mutableExtensionsDir = false;
+    profiles.default.extensions =
+      let
+        extensions = pkgs.nix-vscode-extensions.vscode-marketplace-release;
+      in
+      with extensions;
+      [
+        extensions."42crunch".vscode-openapi
+        extensions."8amjp".charactercount
+        asvetliakov.vscode-neovim
+        banacorn.agda-mode
+        bbenoist.nix
+        biomejs.biome
+        budparr.language-hugo-vscode
+        catppuccin.catppuccin-vsc
+        catppuccin.catppuccin-vsc-icons
+        charliermarsh.ruff
+        cocopon.iceberg-theme
+        cweijan.dbclient-jdbc
+        cweijan.vscode-mysql-client2
+        davidanson.vscode-markdownlint
+        dbaeumer.vscode-eslint
+        denoland.vscode-deno
+        dhall.dhall-lang
+        eamodio.gitlens
+        enkia.tokyo-night
+        esbenp.prettier-vscode
+        github.vscode-github-actions
+        github.vscode-pull-request-github
+        gohugoio.gotmplfmt
+        golang.go
+        gruntfuggly.todo-tree
+        haskell.haskell
+        haskell.language-haskell
+        hbenl.vscode-test-explorer
+        humao.rest-client
+        icrawl.discord-vscode
+        james-yu.latex-workshop
+        koka.language-koka
+        leanprover.lean4
+        marp-team.marp-vscode
+        mathiasfrohlich.kotlin
+        mint-lang.mint
+        mkhl.direnv
+        ms-azuretools.vscode-containers
+        ms-python.debugpy
+        ms-python.python
+        ms-python.vscode-pylance
+        ms-python.vscode-python-envs
+        ms-toolsai.jupyter
+        ms-toolsai.jupyter-keymap
+        ms-toolsai.jupyter-renderers
+        ms-toolsai.vscode-jupyter-cell-tags
+        ms-toolsai.vscode-jupyter-slideshow
+        ms-vscode-remote.remote-ssh
+        ms-vscode-remote.remote-ssh-edit
+        ms-vscode.cmake-tools
+        ms-vscode.cpp-devtools
+        ms-vscode.cpptools
+        ms-vscode.cpptools-extension-pack
+        ms-vscode.cpptools-themes
+        ms-vscode.hexeditor
+        ms-vscode.makefile-tools
+        ms-vscode.remote-explorer
+        ms-vscode.test-adapter-converter
+        ms-vsliveshare.vsliveshare
+        nimsaem.nimvscode
+        nwolverson.ide-purescript
+        nwolverson.language-purescript
+        openai.chatgpt
+        pickoba.satysfi-workshop
+        redhat.vscode-yaml
+        rust-lang.rust-analyzer
+        scala-lang.scala
+        scalameta.metals
+        stylelint.vscode-stylelint
+        sumneko.lua
+        tamasfe.even-better-toml
+        tauri-apps.tauri-vscode
+        thuliteio.hugo-shortcodes
+        tomoki1207.pdf
+        uiua-lang.uiua-vscode
+        unifiedjs.vscode-mdx
+        usernamehw.errorlens
+        vscode-icons-team.vscode-icons
+        vue.volar
+        yzhang.markdown-all-in-one
+        zokugun.explicit-folding
+      ];
   };
 
   programs.difftastic = {
@@ -720,6 +841,7 @@ in
     enable = true;
 
     signing = {
+      format = "openpgp";
       key = "9009FF60684DBF542B8F84DA5AF0540F8ADAD765";
       signByDefault = true;
     };
@@ -800,15 +922,13 @@ in
     enable = true;
     includes = [ "secret.conf" ];
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       "*" = {
         forwardAgent = true;
       };
       "git.trap.jp" = {
-        extraOptions = {
-          HostkeyAlgorithms = "+ssh-rsa";
-          PubkeyAcceptedAlgorithms = "+ssh-rsa";
-        };
+        HostkeyAlgorithms = "+ssh-rsa";
+        PubkeyAcceptedAlgorithms = "+ssh-rsa";
       };
     };
   };
@@ -919,11 +1039,23 @@ in
     enable = true;
     type = "fcitx5";
     fcitx5 = {
-      addons = with pkgs; [
-        fcitx5-mozc
-        fcitx5-skk
-        # (libsForQt5.callPackage ./pkgs/fcitx5-skk.nix { })
-      ];
+      addons =
+        let
+          dict = pkgs.callPackage ./pkgs/merged-dict { };
+        in
+        with pkgs;
+        [
+          fcitx5-mozc
+          (fcitx5-skk.overrideAttrs (
+            _final: _prev: {
+              cmakeFlags = [
+                (pkgs.lib.cmakeBool "ENABLE_QT" false)
+                "-DSKK_PATH=${dict}/share/skk"
+              ];
+            }
+          ))
+          # (libsForQt5.callPackage ./pkgs/fcitx5-skk.nix { })
+        ];
     };
   };
 
